@@ -6,3 +6,4 @@ matplotlib==3.10.9
 ipykernel==7.2.0
 nbformat==5.10.4
 nbclient==0.10.4
+qiskit-ibm-runtime==0.49.0
