@@ -1,0 +1,128 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[italian]{babel}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{listings}
+\usepackage{xcolor}
+\lstset{language=Python,basicstyle=\ttfamily\small,
+  keywordstyle=\color{blue!60!black},commentstyle=\color{gray},
+  breaklines=true,frame=single,showstringspaces=false}
+
+\title{Simulazione dell'algoritmo di Grover con Qiskit}
+\author{Mini relazione sul file \texttt{computazionegrover.py}}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section{Obiettivo del programma}
+Il file \texttt{computazionegrover.py} realizza una simulazione
+dell'algoritmo di Grover, utilizzato per cercare un elemento in uno spazio
+di ricerca non strutturato. Il circuito considera otto qubit di ricerca,
+corrispondenti a $N=2^8=256$ possibili stringhe binarie, e amplifica la
+probabilit\`a di misurare lo stato desiderato
+\[
+  |w\rangle=|11111111\rangle.
+\]
+Il target \`e codificato direttamente nell'oracolo: il programma costituisce
+quindi un esempio dimostrativo con una sola soluzione nota in fase di
+costruzione del circuito.
+
+\section{Registri e inizializzazione}
+Il codice utilizza \texttt{QuantumCircuit}, \texttt{QuantumRegister} e
+\texttt{ClassicalRegister} di Qiskit, insieme al simulatore
+\texttt{AerSimulator} di Qiskit Aer. Vengono creati un registro quantistico
+di nove qubit e un registro classico di otto bit. I qubit da $q_0$ a $q_7$
+costituiscono il registro di ricerca; $q_8$ \`e un qubit ausiliario, detto
+\emph{ancilla}, che non viene misurato.
+
+\begin{lstlisting}
+qc.h(q[0:8])
+qc.x(q[8])
+qc.h(q[8])
+\end{lstlisting}
+
+Le porte Hadamard preparano il registro di ricerca nella sovrapposizione
+uniforme
+\[
+ |s\rangle=\frac{1}{16}\sum_{x=0}^{255}|x\rangle,
+\]
+mentre le porte $X$ e $H$ preparano l'ancilla nello stato
+$|-\rangle=(|0\rangle-|1\rangle)/\sqrt{2}$.
+Inizialmente ogni stringa ha probabilit\`a $1/256$ di essere osservata.
+
+\section{Oracolo e diffusore}
+Il ciclo principale esegue dodici iterazioni, ciascuna composta da un
+oracolo e da un diffusore.
+
+\paragraph{Oracolo.}
+L'istruzione \texttt{qc.mcx(q[0:8], q[8])} applica una porta $X$
+all'ancilla soltanto quando tutti gli otto qubit di controllo valgono uno.
+Poich\'e $X|-\rangle=-|-\rangle$, questa operazione cambia il segno
+dell'ampiezza del solo stato cercato, tramite il fenomeno del
+\emph{phase kickback}. Sul registro di ricerca equivale a
+\[
+ O_w=I-2|w\rangle\langle w|.
+\]
+L'oracolo modifica le fasi, ma da solo non modifica le probabilit\`a di
+misurazione.
+
+\paragraph{Diffusore.}
+La sequenza successiva applica porte $H$ e $X$ a tutti i qubit di ricerca,
+riutilizza la stessa porta multicontrollata e infine applica nuovamente
+$X$ e $H$. Il diffusore standard di Grover \`e
+\[
+ D=2|s\rangle\langle s|-I,
+\]
+e trasforma ciascuna ampiezza $a_x$ in $2\bar a-a_x$, dove $\bar a$ \`e
+la media delle ampiezze. La sequenza implementata nel file realizza
+$I-2|s\rangle\langle s|=-D$: la differenza \`e soltanto una fase globale,
+che non cambia le probabilit\`a osservabili. L'ancilla rimane nello stato
+$|-\rangle$ e pu\`o essere riutilizzata a ogni iterazione.
+
+\section{Numero di iterazioni e risultato atteso}
+Per una singola soluzione, il numero di iterazioni ottimale \`e vicino a
+\[
+ r\simeq\frac{\pi}{4}\sqrt{N}.
+\]
+Pi\`u precisamente, ponendo $\theta=\arcsin(1/\sqrt{N})$, si sceglie
+un intero vicino a $\pi/(4\theta)-1/2$. Per $N=256$ si ottiene $r=12$,
+come indicato nel codice. La probabilit\`a teorica di successo dopo $r$
+iterazioni \`e
+\[
+ P_r=\sin^2\bigl((2r+1)\theta\bigr),
+ \qquad P_{12}\approx 0{,}999947.
+\]
+Un numero maggiore di iterazioni non garantisce un risultato migliore:
+la probabilit\`a oscilla e pu\`o diminuire dopo il massimo.
+
+\section{Simulazione e misurazione}
+Il circuito viene simulato con
+\texttt{AerSimulator(method="statevector")} e misurato per
+\texttt{shots = 1024} esecuzioni. Le misure dei primi otto qubit vengono
+salvate nei corrispondenti bit classici; il metodo \texttt{get\_counts}
+restituisce un dizionario che associa ogni stringa osservata al suo
+numero di occorrenze.
+
+Nel modello ideale utilizzato, il conteggio medio atteso per
+\texttt{11111111} \`e circa $1024P_{12}=1023{,}95$.
+\`E quindi plausibile ottenere tutte le 1024 misure sul target, ma non
+\`e garantito: il campionamento pu\`o produrre occasionalmente altri
+risultati. Questi valori sono previsioni teoriche, non l'esito di
+un'esecuzione del file. Il codice non specifica un modello di rumore
+n\'e un seme casuale per rendere ripetibile il campionamento.
+
+\section{Conclusioni}
+Il programma mostra come l'alternanza tra inversione di fase del target
+e diffusione concentri quasi interamente la probabilit\`a sullo stato
+cercato. In generale Grover richiede $O(\sqrt{N})$ interrogazioni
+all'oracolo, contro $O(N)$ di una ricerca classica non strutturata.
+Questo vantaggio riguarda il numero di interrogazioni nel modello
+quantistico: non implica che una simulazione classica con Qiskit sia
+pi\`u veloce della ricerca classica. Nell'esempio, inoltre, la porta
+multicontrollata \`e descritta ad alto livello; la sua realizzazione su
+hardware richiederebbe una decomposizione in porte native.
+
+\end{document}
