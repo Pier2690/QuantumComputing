@@ -1,128 +1,135 @@
-\documentclass[a4paper,11pt]{article}
+\documentclass[a4paper,12pt]{article}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage[italian]{babel}
 \usepackage[margin=2.5cm]{geometry}
-\usepackage{amsmath,amssymb}
-\usepackage{listings}
-\usepackage{xcolor}
-\lstset{language=Python,basicstyle=\ttfamily\small,
-  keywordstyle=\color{blue!60!black},commentstyle=\color{gray},
-  breaklines=true,frame=single,showstringspaces=false}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\graphicspath{{immagini/}}
+\usepackage[colorlinks=true,urlcolor=blue,linkcolor=black,citecolor=black]{hyperref}
 
-\title{Simulazione dell'algoritmo di Grover con Qiskit}
-\author{Mini relazione sul file \texttt{computazionegrover.py}}
+\title{Studio sperimentale dell'algoritmo di Grover}
+\author{} % Inserire nome e cognome.
 \date{}
 
 \begin{document}
 \maketitle
 
-\section{Obiettivo del programma}
-Il file \texttt{computazionegrover.py} realizza una simulazione
-dell'algoritmo di Grover, utilizzato per cercare un elemento in uno spazio
-di ricerca non strutturato. Il circuito considera otto qubit di ricerca,
-corrispondenti a $N=2^8=256$ possibili stringhe binarie, e amplifica la
-probabilit\`a di misurare lo stato desiderato
+\section{Introduzione}
+In questo progetto studio l'algoritmo di Grover, che permette di cercare una
+soluzione in uno spazio non strutturato mediante l'amplificazione delle
+ampiezze. L'obiettivo degli esperimenti \`e capire come cambia la probabilit\`a
+di successo al variare del numero di iterazioni e quanto il comportamento
+ideale si discosta da quello osservato in presenza di rumore.
+
+Il percorso parte dalla costruzione visuale dei circuiti con Quantum
+Programming Studio e IBM Quantum Composer e prosegue con l'implementazione in Qiskit, le simulazioni e le
+prove su hardware IBM. In questa prima parte mi concentro sul ruolo delle
+porte e sui cambiamenti dello stato quantistico durante l'algoritmo.
+
+
+\section{Primi esperimenti con strumenti visuali}
+Per iniziare ho costruito due piccoli circuiti attraverso strumenti di
+composizione visuale: il primo con Quantum Programming Studio\footnote{
+Quantum Programming Studio, \url{https://quantum-circuit.com/docs/}.},
+il secondo con IBM Quantum Composer\footnote{IBM Quantum Composer,
+\url{https://quantum.cloud.ibm.com/docs/en/guides/composer}.}.
+Ho inserito le porte direttamente sulle linee dei qubit, seguendo da sinistra
+a destra le operazioni di preparazione, oracolo, diffusore e misura.
+Questo approccio mi ha permesso di ragionare sulle singole operazioni prima
+di passare alla costruzione dei circuiti in Python.
+
+Entrambi gli esempi utilizzano due qubit di ricerca, quindi quattro stati
+possibili. Le porte Hadamard iniziali preparano la sovrapposizione uniforme:
 \[
-  |w\rangle=|11111111\rangle.
+ |s\rangle=\frac{|00\rangle+|01\rangle+|10\rangle+|11\rangle}{2}.
 \]
-Il target \`e codificato direttamente nell'oracolo: il programma costituisce
-quindi un esempio dimostrativo con una sola soluzione nota in fase di
-costruzione del circuito.
+Ogni stato ha inizialmente probabilit\`a $1/4$. L'oracolo cambia il segno
+dell'ampiezza della soluzione; il diffusore trasforma questa differenza
+di fase in amplificazione. Nei due circuiti ho usato una sola iterazione.
+Per evitare ambiguit\`a, nel seguito scrivo gli stati nell'ordine $|q_1q_0\rangle$:
+il qubit $q_0$, disegnato in alto, corrisponde al bit a destra.
 
-\section{Registri e inizializzazione}
-Il codice utilizza \texttt{QuantumCircuit}, \texttt{QuantumRegister} e
-\texttt{ClassicalRegister} di Qiskit, insieme al simulatore
-\texttt{AerSimulator} di Qiskit Aer. Vengono creati un registro quantistico
-di nove qubit e un registro classico di otto bit. I qubit da $q_0$ a $q_7$
-costituiscono il registro di ricerca; $q_8$ \`e un qubit ausiliario, detto
-\emph{ancilla}, che non viene misurato.
-
-\begin{lstlisting}
-qc.h(q[0:8])
-qc.x(q[8])
-qc.h(q[8])
-\end{lstlisting}
-
-Le porte Hadamard preparano il registro di ricerca nella sovrapposizione
-uniforme
+\subsection{Quantum Programming Studio: circuito senza ancilla}
+Nel primo circuito ho utilizzato soltanto i due qubit di ricerca.
+L'oracolo \`e costruito con porte $X$, Hadamard e una CNOT.
+Una Hadamard sul target prima e dopo la CNOT permette di ottenere
+una porta controlled-$Z$:
 \[
- |s\rangle=\frac{1}{16}\sum_{x=0}^{255}|x\rangle,
+ (I\otimes H)\,\mathrm{CNOT}\,(I\otimes H)=\mathrm{CZ},
 \]
-mentre le porte $X$ e $H$ preparano l'ancilla nello stato
-$|-\rangle=(|0\rangle-|1\rangle)/\sqrt{2}$.
-Inizialmente ogni stringa ha probabilit\`a $1/256$ di essere osservata.
+intendendo qui il secondo fattore come il qubit target della CNOT.
+La CZ cambia il segno dello stato in cui entrambi i qubit valgono uno.
+Le due porte $X$ sul qubit $q_0$, poste prima e dopo questo blocco,
+spostano la condizione al caso $q_0=0$, $q_1=1$.
+La soluzione marcata \`e quindi $|10\rangle$ nella convenzione adottata.
 
-\section{Oracolo e diffusore}
-Il ciclo principale esegue dodici iterazioni, ciascuna composta da un
-oracolo e da un diffusore.
+Dopo l'oracolo, il diffusore applica $H$ e $X$ a entrambi i qubit,
+poi una seconda CZ, ancora realizzata con H--CNOT--H sul target,
+e infine annulla le $X$ e applica le Hadamard finali.
+Il qubit target delle CNOT fa parte del registro di ricerca:
+non viene aggiunto un qubit ausiliario.
 
-\paragraph{Oracolo.}
-L'istruzione \texttt{qc.mcx(q[0:8], q[8])} applica una porta $X$
-all'ancilla soltanto quando tutti gli otto qubit di controllo valgono uno.
-Poich\'e $X|-\rangle=-|-\rangle$, questa operazione cambia il segno
-dell'ampiezza del solo stato cercato, tramite il fenomeno del
-\emph{phase kickback}. Sul registro di ricerca equivale a
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{QPS.png}
+    \caption{Circuito realizzato in Quantum Programming Studio con due
+    qubit di ricerca, senza ancilla.}
+    \label{fig:studio}
+\end{figure}
+
+\subsection{Quantum Composer: circuito con ancilla}
+Nel secondo circuito ho mantenuto due qubit di ricerca e aggiunto
+un terzo qubit, indicato con \texttt{anc[0]} nello screenshot.
+Questo qubit non rappresenta un ulteriore bit della soluzione:
+lo spazio di ricerca rimane di quattro stati.
+Le porte $X$ e $H$ preparano l'ancilla nello stato
 \[
- O_w=I-2|w\rangle\langle w|.
+ |-\rangle=\frac{|0\rangle-|1\rangle}{\sqrt{2}}.
 \]
-L'oracolo modifica le fasi, ma da solo non modifica le probabilit\`a di
-misurazione.
+L'oracolo \`e una Toffoli con i due qubit di ricerca come controlli
+e l'ancilla come target. Poich\'e $X|-\rangle=-|-\rangle$,
+quando entrambi i controlli valgono uno si introduce un segno meno
+nell'ampiezza corrispondente. Questo meccanismo si chiama
+\emph{phase kickback}: l'ancilla permette di modificare la fase dello stato
+$|11\rangle$, pur rimanendo nello stato $|-\rangle$.
 
-\paragraph{Diffusore.}
-La sequenza successiva applica porte $H$ e $X$ a tutti i qubit di ricerca,
-riutilizza la stessa porta multicontrollata e infine applica nuovamente
-$X$ e $H$. Il diffusore standard di Grover \`e
-\[
- D=2|s\rangle\langle s|-I,
-\]
-e trasforma ciascuna ampiezza $a_x$ in $2\bar a-a_x$, dove $\bar a$ \`e
-la media delle ampiezze. La sequenza implementata nel file realizza
-$I-2|s\rangle\langle s|=-D$: la differenza \`e soltanto una fase globale,
-che non cambia le probabilit\`a osservabili. L'ancilla rimane nello stato
-$|-\rangle$ e pu\`o essere riutilizzata a ogni iterazione.
+Per costruire il diffusore applico $H$ e $X$ sui qubit di ricerca,
+riutilizzo la Toffoli con la stessa ancilla, quindi applico nuovamente
+$X$ e $H$. Alla fine misuro soltanto i due qubit di ricerca.
+In Figura~\ref{fig:composer}, l'ancilla \`e la linea \texttt{anc[0]}.
 
-\section{Numero di iterazioni e risultato atteso}
-Per una singola soluzione, il numero di iterazioni ottimale \`e vicino a
-\[
- r\simeq\frac{\pi}{4}\sqrt{N}.
-\]
-Pi\`u precisamente, ponendo $\theta=\arcsin(1/\sqrt{N})$, si sceglie
-un intero vicino a $\pi/(4\theta)-1/2$. Per $N=256$ si ottiene $r=12$,
-come indicato nel codice. La probabilit\`a teorica di successo dopo $r$
-iterazioni \`e
-\[
- P_r=\sin^2\bigl((2r+1)\theta\bigr),
- \qquad P_{12}\approx 0{,}999947.
-\]
-Un numero maggiore di iterazioni non garantisce un risultato migliore:
-la probabilit\`a oscilla e pu\`o diminuire dopo il massimo.
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{IBMComposer.png}
+    \caption{Circuito realizzato in IBM Quantum Composer:
+    due qubit di ricerca e un'ancilla per il phase kickback.}
+    \label{fig:composer}
+\end{figure}
 
-\section{Simulazione e misurazione}
-Il circuito viene simulato con
-\texttt{AerSimulator(method="statevector")} e misurato per
-\texttt{shots = 1024} esecuzioni. Le misure dei primi otto qubit vengono
-salvate nei corrispondenti bit classici; il metodo \texttt{get\_counts}
-restituisce un dizionario che associa ogni stringa osservata al suo
-numero di occorrenze.
+\subsection{Confronto e funzionamento dei due circuiti}
+Le due costruzioni realizzano la stessa idea di Grover con risorse diverse.
+Il primo circuito modifica direttamente le fasi del registro attraverso
+una CZ decomposta; il secondo ottiene la modifica di fase usando un'ancilla.
+Questa differenza dipende dalla costruzione scelta, non da un obbligo
+imposto dai due strumenti grafici. Inoltre i target sono diversi:
+$|10\rangle$ nel primo circuito e $|11\rangle$ nel secondo.
 
-Nel modello ideale utilizzato, il conteggio medio atteso per
-\texttt{11111111} \`e circa $1024P_{12}=1023{,}95$.
-\`E quindi plausibile ottenere tutte le 1024 misure sul target, ma non
-\`e garantito: il campionamento pu\`o produrre occasionalmente altri
-risultati. Questi valori sono previsioni teoriche, non l'esito di
-un'esecuzione del file. Il codice non specifica un modello di rumore
-n\'e un seme casuale per rendere ripetibile il campionamento.
+Dopo l'oracolo l'ampiezza della soluzione vale $-1/2$ e le altre valgono
+$1/2$. La loro media \`e $1/4$: il diffusore standard trasforma
+ogni ampiezza $a$ in $2\bar a-a$, portando quella della soluzione a 1
+e le altre a 0. Le sequenze mostrate realizzano il diffusore a meno
+di un segno globale, che non modifica le probabilit\`a di misura.
 
-\section{Conclusioni}
-Il programma mostra come l'alternanza tra inversione di fase del target
-e diffusione concentri quasi interamente la probabilit\`a sullo stato
-cercato. In generale Grover richiede $O(\sqrt{N})$ interrogazioni
-all'oracolo, contro $O(N)$ di una ricerca classica non strutturata.
-Questo vantaggio riguarda il numero di interrogazioni nel modello
-quantistico: non implica che una simulazione classica con Qiskit sia
-pi\`u veloce della ricerca classica. Nell'esempio, inoltre, la porta
-multicontrollata \`e descritta ad alto livello; la sua realizzazione su
-hardware richiederebbe una decomposizione in porte native.
+Ho verificato le sequenze ricostruite con una simulazione ideale Statevector:
+il primo circuito restituisce $q_0=0$, $q_1=1$, mentre il secondo restituisce
+$q_0=q_1=1$, entrambi con probabilit\`a numericamente pari a 1.
+Si tratta di una verifica dei circuiti delle immagini, non di conteggi
+sperimentali raccolti dai due strumenti o di risultati hardware.
+
+Questi primi esempi mostrano quindi che l'ancilla non \`e indispensabile
+per costruire Grover: \`e un modo alternativo di realizzare l'oracolo e
+il diffusore. In entrambi i casi l'oracolo da solo cambia le fasi,
+mentre l'amplificazione delle probabilit\`a compare dopo il diffusore.
 
 \end{document}
