@@ -419,18 +419,18 @@ Il codice \`e scritto in Python con Qiskit e si trova nelle sezioni
     $X$ ai qubit corrispondenti ai bit zero, una $Z$ multicontrollata
     e infine annulla le $X$. Il cambio di fase su $|11\ldots1\rangle$
     viene cos\`i trasferito alla stringa desiderata.
-    \item \texttt{build\_diffuser}: applica la sequenza $H$, $X$,
-    $Z$ multicontrollata, $X$, $H$. Aggiunge una fase globale di $\pi$
-    per ottenere esattamente $D$ e confrontare direttamente le ampiezze
-    con la teoria; questa correzione non modifica le probabilit\`a.
+    \item \texttt{build\_diffuser}: usa \texttt{grover\_operator} con
+    un oracolo identit\`a per ottenere soltanto il diffusore $D$.
+    La fase globale necessaria al confronto delle ampiezze con la teoria
+    \`e gi\`a inclusa da Qiskit e non viene aggiunta nuovamente.
     \item \texttt{build\_grover\_circuit}: prepara la sovrapposizione,
     compone oracolo e diffusore per il numero richiesto di iterazioni
     e aggiunge, se richieste, le misure finali.
 \end{itemize}
 La funzione di supporto \texttt{apply\_multi\_controlled\_z} usa una $Z$
-per un qubit, una CZ per due e la sequenza $H$--MCX--$H$ per tre o pi\`u
+per un qubit e \texttt{MCMTGate(ZGate(), n - 1, 1)} per due o pi\`u
 qubit. A differenza dell'esercizio con Cirq, qui il circuito logico
-non aggiunge un'ancilla dedicata: il target della MCX appartiene al
+non aggiunge un'ancilla dedicata: il target della porta appartiene al
 registro di ricerca. La compilazione per il backend viene svolta
 successivamente. Per le verifiche con \texttt{Statevector} costruisco
 il circuito senza misure.
@@ -441,29 +441,25 @@ le spiegazioni di IBM Quantum sull'
 \href{https://quantum.cloud.ibm.com/learning/en/courses/fundamentals-of-quantum-algorithms/grover-algorithm/analysis}{interpretazione geometrica}
 e sulla
 \href{https://quantum.cloud.ibm.com/learning/en/courses/fundamentals-of-quantum-algorithms/grover-algorithm/number-of-iterations}{scelta delle iterazioni}.
-Per la costruzione dei circuiti, due riferimenti specifici sono:
+Per il codice di oracolo e diffusore ho adottato una costruzione molto
+vicina agli esempi della documentazione IBM, adattandola alle funzioni
+e ai parametri utilizzati negli esperimenti del notebook:
 \begin{itemize}
     \item \textbf{Oracolo:}
     il \href{https://quantum.cloud.ibm.com/docs/en/tutorials/grovers-algorithm}{tutorial IBM sull'algoritmo di Grover}
     presenta la funzione \texttt{grover\_oracle}, che applica $X$ ai bit
     zero della soluzione, una $Z$ multicontrollata e infine le stesse $X$.
-    La funzione del notebook segue questo stesso schema, ma realizza
-    la fase multicontrollata con $Z$, CZ oppure $H$--MCX--$H$, invece
-    di utilizzare \texttt{MCMTGate} come nel tutorial.
+    La funzione \texttt{build\_phase\_oracle} \`e un adattamento di
+    questo codice: mantiene l'inversione della stringa per rispettare
+    l'ordine dei qubit e usa la stessa porta \texttt{MCMTGate} con
+    \texttt{ZGate}.
     \item \textbf{Diffusore:}
     la \href{https://quantum.cloud.ibm.com/docs/en/api/qiskit/qiskit.circuit.library.grover_operator}{documentazione Qiskit di \texttt{grover\_operator}}
-    descrive la diffusione come una riflessione sullo stato zero
-    racchiusa tra due strati di Hadamard. Il notebook esplicita questa
-    costruzione con la sequenza $H$, $X$, $Z$ multicontrollata, $X$, $H$,
-    includendo la correzione di fase globale descritta sopra.
+    viene utilizzata direttamente nella funzione \texttt{build\_diffuser}.
+    Poich\'e \texttt{grover\_operator} costruisce il prodotto $DO$,
+    passo come oracolo un circuito vuoto, che realizza l'identit\`a:
+    ottengo cos\`i soltanto $D$.
 \end{itemize}
-Le funzioni del notebook sono quindi implementazioni esplicite di
-costruzioni standard documentate, non nuovi schemi di oracolo e diffusore.
-I riferimenti indicano la corrispondenza tra queste costruzioni e il
-codice utilizzato, senza implicare che le funzioni siano copiate
-integralmente dalle fonti. Il tutorial IBM \`e anche presente separatamente
-in \texttt{grovers-algorithm.ipynb}; gli esperimenti discussi qui usano
-invece le funzioni di \texttt{Grover.ipynb}, senza richiamare un operatore
-Grover preconfezionato.
+Il codice utilizza quindi esempi e strumenti forniti da IBM, evitando cosi costruzioni sviluppate da zero.
 
 \end{document}
