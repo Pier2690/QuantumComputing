@@ -322,4 +322,53 @@ per osservare come gli errori delle porte e della lettura modifichino
 la probabilit\`a di successo rispetto al caso ideale.
 
 
+\subsection{Ambiente di lavoro e strumenti utilizzati}
+
+\begin{itemize}
+    \item \textbf{Python, ambiente virtuale e notebook in Visual Studio Code.}
+    Il codice viene eseguito nell'ambiente locale \texttt{.venv}, con un
+    kernel Python per i notebook Jupyter. Questo formato permette di
+    affiancare codice, spiegazioni, grafici e risultati.
+    Le dipendenze del progetto sono elencate in \texttt{requirements.txt}.
+    Riferimento: \href{https://code.visualstudio.com/docs/datascience/jupyter-notebooks}{notebook Jupyter in VS Code}.
+
+    \item \textbf{Qiskit: costruzione e verifica dei circuiti.}
+    Uso \texttt{QuantumCircuit} per costruire l'oracolo, il diffusore e
+    il circuito completo, inserendo esplicitamente le porte e le misure.
+    Le classi \texttt{Operator} e \texttt{Statevector} permettono di
+    controllare gli operatori e calcolare ampiezze e probabilit\`a ideali.
+    Riferimento: \href{https://quantum.cloud.ibm.com/docs/en/api/qiskit}{documentazione Qiskit}.
+
+    \item \textbf{Transpiler di Qiskit.}
+    Uso \texttt{transpile} e il generatore di pass manager\\
+    \texttt{generate\_preset\_pass\_manager} per adattare i circuiti
+    alle porte e ai collegamenti disponibili sul backend scelto.
+    Questo passaggio \`e necessario soprattutto prima dell'esecuzione
+    sull'hardware reale.
+    Riferimento: \href{https://quantum.cloud.ibm.com/docs/en/api/qiskit/transpiler}{transpiler di Qiskit}.
+
+    \item \textbf{Qiskit Aer.}
+    La classe \texttt{AerSimulator} esegue localmente i circuiti con
+    misure ripetute, sia nel caso ideale sia in presenza di rumore.
+    Il metodo \texttt{from\_backend} configura il simulatore a partire
+    dalle caratteristiche di un backend.
+    Riferimento: \href{https://qiskit.github.io/qiskit-aer/stubs/qiskit_aer.AerSimulator.html}{AerSimulator}.
+
+    \item \textbf{Fake backend IBM.}
+    Uso \texttt{FakeManilaV2}, \texttt{FakeNairobiV2} e
+    \texttt{FakeMumbaiV2}, importati da
+    \texttt{qiskit\_ibm\_runtime.fake\_provider}, per impostare le
+    simulazioni con rumore. Questi profili descrivono caratteristiche
+    ed errori di dispositivi IBM; le prove rimangono simulazioni locali
+    e non riproducono necessariamente le condizioni attuali delle QPU.
+    Riferimento: \href{https://quantum.cloud.ibm.com/docs/en/api/qiskit-ibm-runtime/fake-provider}{fake provider IBM}.
+
+    \item \textbf{IBM Quantum Platform e Qiskit IBM Runtime.}
+    Accedo all'hardware tramite il mio account IBM.
+    \texttt{QiskitRuntimeService} gestisce la connessione, la scelta del
+    backend e il recupero dei job; \texttt{SamplerV2} invia i circuiti
+    e restituisce i risultati delle misure. Salvo i risultati per poterli
+    analizzare anche senza ripetere l'esecuzione sulla QPU.
+    Riferimento: \href{https://quantum.cloud.ibm.com/docs/en/api/qiskit-ibm-runtime}{API di Qiskit IBM Runtime}.
+\end{itemize}
 \end{document}
