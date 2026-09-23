@@ -187,6 +187,13 @@ Il codice viene eseguito su un simulatore ideale locale, senza collegarsi a un c
 Ho scelto tre qubit di ricerca, quindi otto stati possibili, e una sola
 soluzione da trovare: $|101\rangle$, nell'ordine $|q_2q_1q_0\rangle$.
 
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[width=0.7\textwidth]{CirqRapresentation.png}
+    \caption{Organizzazione di un circuito in Cirq: qubit, operazioni e momenti.}
+    \label{fig:cirq-momenti}
+\end{figure}
+
 \paragraph{Costruzione del circuito.}
 Ho mantenuto la costruzione con ancilla usata in Composer: il circuito
 contiene quindi quattro qubit totali, ma solo tre codificano la soluzione.
@@ -196,6 +203,8 @@ Il phase kickback cambia cos\`i il segno della sola ampiezza cercata.
 Il diffusore riutilizza la stessa ancilla, con le porte $H$ e $X$ sui
 qubit di ricerca prima del blocco controllato e $X$ e $H$ dopo.
 
+
+\newpage    
 \paragraph{Osservazione dei passaggi.}
 Nel notebook stampo il circuito durante la costruzione e seguo la
 simulazione dopo ogni \emph{momento}, cio\`e un gruppo di operazioni su
@@ -209,31 +218,80 @@ delle ampiezze senza cambiare le probabilit\`a, mentre il diffusore
 aumenta quella della soluzione. Verifico inoltre che, dopo la preparazione,
 l'ancilla rimanga nello stato $|-\rangle$.
 
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[width=\textwidth]{CirqCompleto.png}
+    \caption{Circuito di Grover costruito con Cirq prima della misura:
+    tre qubit di ricerca, un'ancilla e due iterazioni.}
+    \label{fig:cirq-completo}
+\end{figure}
+
+\begin{figure}[!htbp]
+    \centering
+    \begin{minipage}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{Momento3.png}
+        \par\smallskip
+        {\small Momento 3}
+    \end{minipage}\hfill
+    \begin{minipage}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{Momento6.png}
+        \par\smallskip
+        {\small Momento 6}
+    \end{minipage}
+    \par\medskip
+    \begin{minipage}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{Momento11.png}
+        \par\smallskip
+        {\small Momento 11}
+    \end{minipage}\hfill
+    \begin{minipage}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{Momento19.png}
+        \par\smallskip
+        {\small Momento 19}
+    \end{minipage}
+    \caption{Stampe della simulazione in quattro momenti del circuito di Grover.}
+    \label{fig:cirq-quattro-momenti}
+\end{figure}
+\newpage
 \paragraph{Risultati.}
 Ho applicato due iterazioni di Grover. I grafici del notebook mostrano
 come cambia la distribuzione sugli otto stati; per la soluzione si ottiene:
-\begin{center}
-\begin{tabular}{lc}
-\hline
-Passaggio & Probabilit\`a di $|101\rangle$ \\
-\hline
-Sovrapposizione iniziale & $12{,}5\%$ \\
-Dopo la prima iterazione & $78{,}125\%$ \\
-Dopo la seconda iterazione & $94{,}53125\%$ \\
-\hline
-\end{tabular}
-\end{center}
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[width=\textwidth]{CirqRisultato.png}
+    \caption{Distribuzione delle probabilit\`a nella simulazione con Cirq:
+    sovrapposizione iniziale e risultati dopo il primo e il secondo diffusore.
+    Lo stato cercato $|101\rangle$ \`e evidenziato in arancione.}
+    \label{fig:cirq-risultato}
+\end{figure}
+\\
 Il risultato coincide con la previsione teorica
 $P_k=\sin^2((2k+1)\theta)$, con $\theta=\arcsin(1/\sqrt{8})$.
 Infine ho misurato soltanto i tre qubit di ricerca per 1024 ripetizioni:
 nell'esecuzione salvata nel notebook, $101$ compare 964 volte,
 con una frequenza di circa $94{,}14\%$.
-Il piccolo scarto rispetto alla probabilit\`a teorica dipende dal
-campionamento delle misure, non dal rumore, che qui non \`e presente.
 
-Questo esperimento rende visibile il passaggio dal cambio di fase
-all'amplificazione della probabilit\`a. Mostra anche una differenza
-rispetto agli esempi precedenti: con tre qubit e una soluzione,
-due iterazioni non portano al successo certo, pur rendendo $101$
-nettamente pi\`u probabile degli altri stati.
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[width=0.5\textwidth]{Cirq1024Shot.png}
+    \caption{Risultati di 1024 shot nella simulazione con Cirq.}
+    \label{fig:cirq-1024-shot}
+\end{figure}
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[width=0.9\textwidth]{GraficoCirqFinale.png}
+    \caption{Confronto grafico tra le probabilità.}
+    \label{fig:cirq-grafico-finale}
+\end{figure}
+
+\newpage
+
+\section{Studio Sperimentale con Qiskit di IBM Quantum e hardware reale}
+
+
 \end{document}
