@@ -58,20 +58,30 @@ Nel seguito rappresento gli stati nell'ordine $|q_1q_0\rangle$:
 il qubit $q_0$, disegnato in alto nel circuito, corrisponde al bit pi\`u
 a destra nella stringa. Mantengo questa convenzione in tutta la relazione
 per rendere univoca la lettura degli stati.
-
+\newpage
 \subsection{Quantum Programming Studio: circuito senza ancilla}
 Nel primo circuito ho utilizzato soltanto i due qubit di ricerca.
 L'oracolo \`e costruito con porte $X$, Hadamard e una CNOT.
 Una Hadamard sul target prima e dopo la CNOT permette di ottenere
 una porta controlled-$Z$:
 \[
- (I\otimes H)\,\mathrm{CNOT}\,(I\otimes H)=\mathrm{CZ},
+ H_{q_1}\,\mathrm{CNOT}_{q_0\to q_1}\,H_{q_1}=\mathrm{CZ},
 \]
-intendendo qui il secondo fattore come il qubit target della CNOT.
-La CZ cambia il segno dello stato in cui entrambi i qubit valgono uno.
-Le due porte $X$ sul qubit $q_0$, poste prima e dopo questo blocco,
-spostano la condizione al caso $q_0=0$, $q_1=1$.
-La soluzione marcata \`e quindi $|10\rangle$ nella convenzione adottata.
+dove $q_0$ \`e il controllo della CNOT e $q_1$ il suo target.
+La CZ lascia invariati gli stati della base, tranne $|11\rangle$,
+di cui inverte il segno dell'ampiezza. Per marcare invece $|10\rangle$,
+applico una porta $X$ su $q_0$ prima e dopo questo blocco.
+La prima $X$ trasforma temporaneamente $|10\rangle$ in $|11\rangle$;
+la CZ introduce il segno meno e la seconda $X$ ripristina lo stato iniziale:
+\[
+ |10\rangle \xrightarrow{X_{q_0}} |11\rangle
+ \xrightarrow{\mathrm{CZ}} -|11\rangle
+ \xrightarrow{X_{q_0}} -|10\rangle.
+\]
+Gli altri stati vengono ripristinati senza cambiamenti di segno, perch\'e
+la prima $X$ non li porta in $|11\rangle$. L'effetto complessivo
+dell'oracolo \`e quindi invertire soltanto l'ampiezza della soluzione
+$|10\rangle$, senza modificarne i bit o la probabilit\`a di misura.
 
 Dopo l'oracolo, il diffusore applica $H$ e $X$ a entrambi i qubit,
 poi una seconda CZ, ancora realizzata con H--CNOT--H sul target,
