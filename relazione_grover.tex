@@ -102,6 +102,12 @@ non viene aggiunto un qubit ausiliario.
     \caption{Circuito realizzato in Quantum Programming Studio con due
     qubit di ricerca, senza ancilla.}
     \label{fig:studio}
+    \par\medskip
+    \includegraphics[width=0.6\textwidth]{RisultatoQPS.png}
+    \caption{Risultato visualizzato in Quantum Programming Studio:
+    $q_0=0$ e $q_1=1$, corrispondenti allo stato $|10\rangle$
+    nella convenzione adottata.}
+    \label{fig:risultato-studio}
 \end{figure}
 
 \subsection{Quantum Composer: circuito con ancilla}
@@ -125,37 +131,48 @@ riutilizzo la Toffoli con la stessa ancilla, quindi applico nuovamente
 $X$ e $H$. Alla fine misuro soltanto i due qubit di ricerca.
 In Figura~\ref{fig:composer}, l'ancilla \`e la linea \texttt{anc[0]}.
 
-\begin{figure}[htbp]
+\begin{center}
+\setlength{\fboxsep}{10pt}
+\fbox{\parbox{\dimexpr\linewidth-2\fboxsep-2\fboxrule\relax}{%
+\textbf{Perch\'e uso una porta $X$ sull'ancilla?}
+
+Nello schema mostrato a lezione, il cambio di segno viene ottenuto
+con una porta $Z$ controllata, applicata direttamente ai qubit di ricerca.
+Nel mio circuito ottengo lo stesso effetto con una Toffoli e un qubit
+aggiuntivo: l'ancilla. Per far funzionare questo meccanismo, preparo
+l'ancilla in $|-\rangle$ applicando prima $X$ e poi $H$.
+Quando i due controlli valgono uno, la Toffoli applica una $X$ all'ancilla:
+poich\'e $X|-\rangle=-|-\rangle$, cambia il segno dell'ampiezza
+corrispondente nel registro di ricerca. Le porte $H$ e $X$ sui qubit di ricerca
+rimangono necessarie per completare il diffusore. I due modi di costruirlo producono le stesse probabilit\`a di misura
+}}
+\end{center}
+
+\begin{figure}[!htbp]
     \centering
-    \includegraphics[width=\textwidth]{IBMComposer.png}
+    \small
+    \includegraphics[width=0.50\textwidth]{IBMComposer.png}
     \caption{Circuito realizzato in IBM Quantum Composer:
     due qubit di ricerca e un'ancilla per il phase kickback.}
     \label{fig:composer}
+    \par\smallskip
+    \includegraphics[width=0.45\textwidth]{RisultatoComposer.png}
+    \caption{Risultato in Quantum Composer: il registro di ricerca viene
+    misurato nello stato $|11\rangle$. La Q-sphere include anche l'ancilla.}
+    \label{fig:risultato-composer}
 \end{figure}
-
+\newpage
 \subsection{Confronto e funzionamento dei due circuiti}
 Le due costruzioni realizzano la stessa idea di Grover con risorse diverse.
 Il primo circuito modifica direttamente le fasi del registro attraverso
-una CZ decomposta; il secondo ottiene la modifica di fase usando un'ancilla.
+una CZ (decomposta come visto); il secondo ottiene la modifica di fase usando un'ancilla.
 Questa differenza dipende dalla costruzione scelta, non da un obbligo
 imposto dai due strumenti grafici. Inoltre i target sono diversi:
 $|10\rangle$ nel primo circuito e $|11\rangle$ nel secondo.
 
 Dopo l'oracolo l'ampiezza della soluzione vale $-1/2$ e le altre valgono
 $1/2$. La loro media \`e $1/4$: il diffusore standard trasforma
-ogni ampiezza $a$ in $2\bar a-a$, portando quella della soluzione a 1
+ogni ampiezza $a$ in $2\overline{a}-a$, portando quella della soluzione a 1
 e le altre a 0. Le sequenze mostrate realizzano il diffusore a meno
 di un segno globale, che non modifica le probabilit\`a di misura.
-
-Ho verificato le sequenze ricostruite con una simulazione ideale Statevector:
-il primo circuito restituisce $q_0=0$, $q_1=1$, mentre il secondo restituisce
-$q_0=q_1=1$, entrambi con probabilit\`a numericamente pari a 1.
-Si tratta di una verifica dei circuiti delle immagini, non di conteggi
-sperimentali raccolti dai due strumenti o di risultati hardware.
-
-Questi primi esempi mostrano quindi che l'ancilla non \`e indispensabile
-per costruire Grover: \`e un modo alternativo di realizzare l'oracolo e
-il diffusore. In entrambi i casi l'oracolo da solo cambia le fasi,
-mentre l'amplificazione delle probabilit\`a compare dopo il diffusore.
-
 \end{document}
