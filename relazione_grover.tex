@@ -299,5 +299,27 @@ con una frequenza di circa $94{,}14\%$.
 
 \section{Studio Sperimentale con Qiskit di IBM Quantum e hardware reale}
 
+Dopo i primi esercizi, ho approfondito lo studio di Grover nel notebook
+\texttt{Grover.ipynb}, utilizzando Qiskit. L'obiettivo \`e verificare
+il comportamento previsto dalla teoria e capire come cambiano i risultati
+quando si passa dalla simulazione ideale a condizioni pi\`u vicine a quelle
+di un dispositivo reale.\\
+
+\noindent Ho organizzato gli esperimenti in tre modalit\`a: 
+\begin{itemize}
+    \item simulazione ideale,
+    \item simulazione con rumore ricavato dai profili dei dispositivi IBM
+    (\emph{fake backend}),
+    \item esecuzione su hardware quantistico IBM.
+\end{itemize}
+Nella simulazione ideale confronto le probabilit\`a ricavate dal vettore
+di stato con le frequenze osservate nelle misure, per mettere in evidenza
+le fluttuazioni dovute al numero finito di ripetizioni. Studio inoltre
+il caso in cui il numero di soluzioni non sia noto, scegliendo casualmente
+quante iterazioni eseguire e verifico se il risultato \`e una soluzione valida.
+Passo poi alle simulazioni con rumore e alle prove su hardware reale,
+per osservare come gli errori delle porte e della lettura modifichino
+la probabilit\`a di successo rispetto al caso ideale.
+
 
 \end{document}
