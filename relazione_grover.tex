@@ -179,6 +179,10 @@ di un segno globale, che non modifica le probabilit\`a di misura.
 Dopo i circuiti costruiti con gli strumenti visuali, ho realizzato un
 piccolo esperimento in Python con
 \href{https://quantumai.google/cirq}{Cirq di Google Quantum AI}.
+Come Qiskit, Cirq \`e una libreria Python; una sua particolarit\`a \`e
+organizzare esplicitamente il circuito in \href{https://quantumai.google/cirq/build/circuits}{momenti},
+raggruppando le operazioni su qubit distinti: una struttura comoda per
+seguire la simulazione passo dopo passo.
 Il codice viene eseguito su un simulatore ideale locale, senza collegarsi a un computer quantistico.
 Ho scelto tre qubit di ricerca, quindi otto stati possibili, e una sola
 soluzione da trovare: $|101\rangle$, nell'ordine $|q_2q_1q_0\rangle$.
