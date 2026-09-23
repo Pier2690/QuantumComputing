@@ -371,4 +371,99 @@ la probabilit\`a di successo rispetto al caso ideale.
     analizzare anche senza ripetere l'esecuzione sulla QPU.\\
     \href{https://quantum.cloud.ibm.com/docs/en/api/qiskit-ibm-runtime}{API di Qiskit IBM Runtime}.
 \end{itemize}
+\subsection{Descrizione e implementazione dell'algoritmo}
+L'algoritmo di Grover cerca una soluzione tra $N=2^n$ stati, rappresentati
+da $n$ qubit. Nel notebook indico con $W$ l'insieme delle soluzioni e con
+$M$ il loro numero. Per costruire e verificare gli esperimenti scelgo
+esplicitamente le stringhe da marcare: non carico un database classico,
+ma realizzo un oracolo che riconosce gli stati scelti.
+Le stringhe seguono la convenzione $|q_{n-1}\ldots q_0\rangle$.
+
+\paragraph{Funzionamento.}
+Il circuito parte dallo stato $|0\ldots0\rangle$. Una porta Hadamard
+su ciascun qubit prepara la sovrapposizione uniforme
+\[
+    |s\rangle=\frac{1}{\sqrt{N}}\sum_{x=0}^{N-1}|x\rangle.
+\]
+Ogni iterazione applica poi due operazioni:
+\begin{enumerate}
+    \item \textbf{Oracolo.} Cambia il segno dell'ampiezza degli stati
+    appartenenti a $W$, lasciando invariati gli altri:
+    \[
+        O_W|x\rangle=
+        \begin{cases}
+            -|x\rangle & \text{se }x\in W,\\
+            |x\rangle & \text{altrimenti}.
+        \end{cases}
+    \]
+    Questo passaggio modifica le fasi, ma non le probabilit\`a di misura.
+    \item \textbf{Diffusore.} Applica la riflessione
+    $D=2|s\rangle\langle s|-I$, che trasforma ogni ampiezza $a_x$
+    in $2\overline{a}-a_x$, dove $\overline{a}$ \`e la media delle ampiezze.
+    Insieme all'oracolo, permette di amplificare le soluzioni.
+\end{enumerate}
+Dopo $k$ iterazioni lo stato \`e $(DO_W)^k|s\rangle$ e la misura
+restituisce una stringa candidata. Nel caso ideale la probabilit\`a
+complessiva di ottenere una soluzione \`e
+\[
+    P(k)=\sin^2((2k+1)\theta),\qquad
+    \theta=\arcsin\sqrt{\frac{M}{N}}.
+\]
+\newpage
+
+\paragraph{Codice sorgente e scelte implementative.}
+Il codice \`e scritto in Python con Qiskit e si trova nelle sezioni
+5--8 di \texttt{Grover.ipynb}. Le funzioni principali sono:
+\begin{itemize}
+    \item \texttt{build\_phase\_oracle}: per ogni soluzione applica
+    $X$ ai qubit corrispondenti ai bit zero, una $Z$ multicontrollata
+    e infine annulla le $X$. Il cambio di fase su $|11\ldots1\rangle$
+    viene cos\`i trasferito alla stringa desiderata.
+    \item \texttt{build\_diffuser}: applica la sequenza $H$, $X$,
+    $Z$ multicontrollata, $X$, $H$. Aggiunge una fase globale di $\pi$
+    per ottenere esattamente $D$ e confrontare direttamente le ampiezze
+    con la teoria; questa correzione non modifica le probabilit\`a.
+    \item \texttt{build\_grover\_circuit}: prepara la sovrapposizione,
+    compone oracolo e diffusore per il numero richiesto di iterazioni
+    e aggiunge, se richieste, le misure finali.
+\end{itemize}
+La funzione di supporto \texttt{apply\_multi\_controlled\_z} usa una $Z$
+per un qubit, una CZ per due e la sequenza $H$--MCX--$H$ per tre o pi\`u
+qubit. A differenza dell'esercizio con Cirq, qui il circuito logico
+non aggiunge un'ancilla dedicata: il target della MCX appartiene al
+registro di ricerca. La compilazione per il backend viene svolta
+successivamente. Per le verifiche con \texttt{Statevector} costruisco
+il circuito senza misure.
+
+\paragraph{Materiale di riferimento.}
+La costruzione segue l'algoritmo descritto nel materiale teorico del corso. Nel notebook sono inoltre richiamate
+le spiegazioni di IBM Quantum sull'
+\href{https://quantum.cloud.ibm.com/learning/en/courses/fundamentals-of-quantum-algorithms/grover-algorithm/analysis}{interpretazione geometrica}
+e sulla
+\href{https://quantum.cloud.ibm.com/learning/en/courses/fundamentals-of-quantum-algorithms/grover-algorithm/number-of-iterations}{scelta delle iterazioni}.
+Per la costruzione dei circuiti, due riferimenti specifici sono:
+\begin{itemize}
+    \item \textbf{Oracolo:}
+    il \href{https://quantum.cloud.ibm.com/docs/en/tutorials/grovers-algorithm}{tutorial IBM sull'algoritmo di Grover}
+    presenta la funzione \texttt{grover\_oracle}, che applica $X$ ai bit
+    zero della soluzione, una $Z$ multicontrollata e infine le stesse $X$.
+    La funzione del notebook segue questo stesso schema, ma realizza
+    la fase multicontrollata con $Z$, CZ oppure $H$--MCX--$H$, invece
+    di utilizzare \texttt{MCMTGate} come nel tutorial.
+    \item \textbf{Diffusore:}
+    la \href{https://quantum.cloud.ibm.com/docs/en/api/qiskit/qiskit.circuit.library.grover_operator}{documentazione Qiskit di \texttt{grover\_operator}}
+    descrive la diffusione come una riflessione sullo stato zero
+    racchiusa tra due strati di Hadamard. Il notebook esplicita questa
+    costruzione con la sequenza $H$, $X$, $Z$ multicontrollata, $X$, $H$,
+    includendo la correzione di fase globale descritta sopra.
+\end{itemize}
+Le funzioni del notebook sono quindi implementazioni esplicite di
+costruzioni standard documentate, non nuovi schemi di oracolo e diffusore.
+I riferimenti indicano la corrispondenza tra queste costruzioni e il
+codice utilizzato, senza implicare che le funzioni siano copiate
+integralmente dalle fonti. Il tutorial IBM \`e anche presente separatamente
+in \texttt{grovers-algorithm.ipynb}; gli esperimenti discussi qui usano
+invece le funzioni di \texttt{Grover.ipynb}, senza richiamare un operatore
+Grover preconfezionato.
+
 \end{document}
