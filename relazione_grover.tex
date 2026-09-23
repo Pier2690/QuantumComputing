@@ -429,10 +429,6 @@ Il codice \`e scritto in Python con Qiskit e si trova nelle sezioni
     l'oracolo e poi il diffusore. Ripete questo blocco il numero richiesto di volte
     e aggiunge, se richieste, le misure finali.
 \end{itemize}
-La funzione di supporto \texttt{apply\_multi\_controlled\_z} usa una $Z$
-per un qubit e \\ \texttt{MCMTGate(ZGate(), n - 1, 1)} per due o pi\`u
-qubit: i parametri indicano $n-1$ controlli e un solo target.
-Per $n=2$ questa operazione equivale a una CZ.
 
 \paragraph{Materiale di riferimento.}
 La costruzione segue l'algoritmo descritto nel materiale teorico del corso. Nel notebook sono inoltre richiamate
@@ -460,5 +456,22 @@ e ai parametri utilizzati negli esperimenti del notebook:
     ottengo cos\`i soltanto $D$.
 \end{itemize}
 Il codice utilizza quindi esempi e strumenti forniti da IBM, evitando cosi costruzioni sviluppate da zero.
+
+\begin{figure}[!htbp]
+    \centering
+    \begin{minipage}[t]{0.48\textwidth}
+        \centering
+        \vspace{0pt}
+        \includegraphics[width=\linewidth]{OracleQiskit.png}
+    \end{minipage}\hfill
+    \begin{minipage}[t]{0.48\textwidth}
+        \centering
+        \vspace{0pt}
+        \includegraphics[width=\linewidth]{DiffusoreQiskit.png}
+    \end{minipage}
+    \caption{Oracolo di fase per lo stato $|101\rangle$ e diffusore
+    costruiti con Qiskit su tre qubit di ricerca, senza ancilla dedicata.}
+    \label{fig:oracolo-diffusore-qiskit}
+\end{figure}
 
 \end{document}
