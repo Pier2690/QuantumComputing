@@ -417,23 +417,22 @@ Il codice \`e scritto in Python con Qiskit e si trova nelle sezioni
 \begin{itemize}
     \item \texttt{build\_phase\_oracle}: per ogni soluzione applica
     $X$ ai qubit corrispondenti ai bit zero, una $Z$ multicontrollata
-    e infine annulla le $X$. Il cambio di fase su $|11\ldots1\rangle$
+    e infine applica nuovamente le stesse $X$ per ripristinare i bit.
+    Il cambio di fase su $|11\ldots1\rangle$
     viene cos\`i trasferito alla stringa desiderata.
     \item \texttt{build\_diffuser}: usa \texttt{grover\_operator} con
     un oracolo identit\`a per ottenere soltanto il diffusore $D$.
-    La fase globale necessaria al confronto delle ampiezze con la teoria
+    La fase globale necessaria al confronto delle ampiezze
     \`e gi\`a inclusa da Qiskit e non viene aggiunta nuovamente.
-    \item \texttt{build\_grover\_circuit}: prepara la sovrapposizione,
-    compone oracolo e diffusore per il numero richiesto di iterazioni
+    \item \texttt{build\_grover\_circuit}: prepara la sovrapposizione
+    uniforme con le Hadamard e, a ogni iterazione, applica prima
+    l'oracolo e poi il diffusore. Ripete questo blocco il numero richiesto di volte
     e aggiunge, se richieste, le misure finali.
 \end{itemize}
 La funzione di supporto \texttt{apply\_multi\_controlled\_z} usa una $Z$
-per un qubit e \texttt{MCMTGate(ZGate(), n - 1, 1)} per due o pi\`u
-qubit. A differenza dell'esercizio con Cirq, qui il circuito logico
-non aggiunge un'ancilla dedicata: il target della porta appartiene al
-registro di ricerca. La compilazione per il backend viene svolta
-successivamente. Per le verifiche con \texttt{Statevector} costruisco
-il circuito senza misure.
+per un qubit e \\ \texttt{MCMTGate(ZGate(), n - 1, 1)} per due o pi\`u
+qubit: i parametri indicano $n-1$ controlli e un solo target.
+Per $n=2$ questa operazione equivale a una CZ.
 
 \paragraph{Materiale di riferimento.}
 La costruzione segue l'algoritmo descritto nel materiale teorico del corso. Nel notebook sono inoltre richiamate
