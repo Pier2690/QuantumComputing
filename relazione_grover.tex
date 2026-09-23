@@ -8,32 +8,37 @@
 \graphicspath{{immagini/}}
 \usepackage[colorlinks=true,urlcolor=blue,linkcolor=black,citecolor=black]{hyperref}
 
-\title{Studio sperimentale dell'algoritmo di Grover}
-\author{} % Inserire nome e cognome.
-\date{}
+\newcommand{\nome}{Pierluigi Boscaglia}
+\newcommand{\matricola}{983553}
 
 \begin{document}
-\maketitle
+\begin{center}
+    {\Large\textbf{LABORATORIO AA. 2025/2026}}\\[0.2cm]
+    {\large\textit{Computazione Quantistica} INF0427}\\[0.8cm]
+    {\Large Studio sperimentale dell'algoritmo di Grover}\\[0.6cm]
+    {\large\nome}\\[0.15cm]
+    Matricola: \matricola
+\end{center}
+\vspace{0.5cm}
 
 \section{Introduzione}
-In questo progetto studio l'algoritmo di Grover, che permette di cercare una
+In questo progetto studio l'algoritmo di Grover
+(\href{https://arxiv.org/abs/quant-ph/9605043}{paper originale}), che permette di cercare una
 soluzione in uno spazio non strutturato mediante l'amplificazione delle
 ampiezze. L'obiettivo degli esperimenti \`e capire come cambia la probabilit\`a
 di successo al variare del numero di iterazioni e quanto il comportamento
 ideale si discosta da quello osservato in presenza di rumore.
 
 Il percorso parte dalla costruzione visuale dei circuiti con Quantum
-Programming Studio e IBM Quantum Composer e prosegue con l'implementazione in Qiskit, le simulazioni e le
-prove su hardware IBM. In questa prima parte mi concentro sul ruolo delle
-porte e sui cambiamenti dello stato quantistico durante l'algoritmo.
+\href{https://quantum-circuit.com/}{Quantum Programming Studio} e \href{https://quantum.cloud.ibm.com/docs/en/guides/composer}{IBM Quantum Composer} e prosegue con l'implementazione in \href{https://qiskit.org/}{Qiskit}, le simulazioni e le
+prove su hardware 
+\href{https://quantum.ibm.com/}{IBM Quantum Platform}.
 
 
 \section{Primi esperimenti con strumenti visuali}
 Per iniziare ho costruito due piccoli circuiti attraverso strumenti di
-composizione visuale: il primo con Quantum Programming Studio\footnote{
-Quantum Programming Studio, \url{https://quantum-circuit.com/docs/}.},
-il secondo con IBM Quantum Composer\footnote{IBM Quantum Composer,
-\url{https://quantum.cloud.ibm.com/docs/en/guides/composer}.}.
+composizione visuale: il primo con Quantum Programming Studio,
+il secondo con IBM Quantum Composer.
 Ho inserito le porte direttamente sulle linee dei qubit, seguendo da sinistra
 a destra le operazioni di preparazione, oracolo, diffusore e misura.
 Questo approccio mi ha permesso di ragionare sulle singole operazioni prima
@@ -44,11 +49,15 @@ possibili. Le porte Hadamard iniziali preparano la sovrapposizione uniforme:
 \[
  |s\rangle=\frac{|00\rangle+|01\rangle+|10\rangle+|11\rangle}{2}.
 \]
-Ogni stato ha inizialmente probabilit\`a $1/4$. L'oracolo cambia il segno
-dell'ampiezza della soluzione; il diffusore trasforma questa differenza
-di fase in amplificazione. Nei due circuiti ho usato una sola iterazione.
-Per evitare ambiguit\`a, nel seguito scrivo gli stati nell'ordine $|q_1q_0\rangle$:
-il qubit $q_0$, disegnato in alto, corrisponde al bit a destra.
+Inizialmente, ciascuno dei quattro stati ha probabilit\`a $1/4$ di essere
+misurato. L'oracolo inverte il segno dell'ampiezza dello stato cercato,
+senza modificarne la probabilit\`a; il diffusore sfrutta questa differenza
+di fase per amplificarne l'ampiezza. In entrambi i circuiti ho applicato
+una sola iterazione di Grover, composta da oracolo e diffusore.
+Nel seguito rappresento gli stati nell'ordine $|q_1q_0\rangle$:
+il qubit $q_0$, disegnato in alto nel circuito, corrisponde al bit pi\`u
+a destra nella stringa. Mantengo questa convenzione in tutta la relazione
+per rendere univoca la lettura degli stati.
 
 \subsection{Quantum Programming Studio: circuito senza ancilla}
 Nel primo circuito ho utilizzato soltanto i due qubit di ricerca.
