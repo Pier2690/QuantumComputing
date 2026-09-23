@@ -175,4 +175,61 @@ $1/2$. La loro media \`e $1/4$: il diffusore standard trasforma
 ogni ampiezza $a$ in $2\overline{a}-a$, portando quella della soluzione a 1
 e le altre a 0. Le sequenze mostrate realizzano il diffusore a meno
 di un segno globale, che non modifica le probabilit\`a di misura.
+\section{Esercizio svolto con Cirq di Google Quantum AI}
+Dopo i circuiti costruiti con gli strumenti visuali, ho realizzato un
+piccolo esperimento in Python con
+\href{https://quantumai.google/cirq}{Cirq di Google Quantum AI}.
+Il codice viene eseguito su un simulatore ideale locale, senza collegarsi a un computer quantistico.
+Ho scelto tre qubit di ricerca, quindi otto stati possibili, e una sola
+soluzione da trovare: $|101\rangle$, nell'ordine $|q_2q_1q_0\rangle$.
+
+\paragraph{Costruzione del circuito.}
+Ho mantenuto la costruzione con ancilla usata in Composer: il circuito
+contiene quindi quattro qubit totali, ma solo tre codificano la soluzione.
+Per selezionare $|101\rangle$, invece di $|111\rangle$, inserisco una $X$
+sul qubit centrale $q_1$ prima e dopo questa porta.
+Il phase kickback cambia cos\`i il segno della sola ampiezza cercata.
+Il diffusore riutilizza la stessa ancilla, con le porte $H$ e $X$ sui
+qubit di ricerca prima del blocco controllato e $X$ e $H$ dopo.
+
+\paragraph{Osservazione dei passaggi.}
+Nel notebook stampo il circuito durante la costruzione e seguo la
+simulazione dopo ogni \emph{momento}, cio\`e un gruppo di operazioni su
+qubit distinti. Per ogni stato di ricerca mostro le due ampiezze associate
+ai valori zero e uno dell'ancilla. La probabilit\`a del registro di ricerca
+si ottiene sommando i moduli al quadrato di queste due ampiezze.
+Queste informazioni sono disponibili nel simulatore: non sono misure
+intermedie inserite nel circuito.
+Le stampe permettono di osservare che l'oracolo completo cambia il segno
+delle ampiezze senza cambiare le probabilit\`a, mentre il diffusore
+aumenta quella della soluzione. Verifico inoltre che, dopo la preparazione,
+l'ancilla rimanga nello stato $|-\rangle$.
+
+\paragraph{Risultati.}
+Ho applicato due iterazioni di Grover. I grafici del notebook mostrano
+come cambia la distribuzione sugli otto stati; per la soluzione si ottiene:
+\begin{center}
+\begin{tabular}{lc}
+\hline
+Passaggio & Probabilit\`a di $|101\rangle$ \\
+\hline
+Sovrapposizione iniziale & $12{,}5\%$ \\
+Dopo la prima iterazione & $78{,}125\%$ \\
+Dopo la seconda iterazione & $94{,}53125\%$ \\
+\hline
+\end{tabular}
+\end{center}
+Il risultato coincide con la previsione teorica
+$P_k=\sin^2((2k+1)\theta)$, con $\theta=\arcsin(1/\sqrt{8})$.
+Infine ho misurato soltanto i tre qubit di ricerca per 1024 ripetizioni:
+nell'esecuzione salvata nel notebook, $101$ compare 964 volte,
+con una frequenza di circa $94{,}14\%$.
+Il piccolo scarto rispetto alla probabilit\`a teorica dipende dal
+campionamento delle misure, non dal rumore, che qui non \`e presente.
+
+Questo esperimento rende visibile il passaggio dal cambio di fase
+all'amplificazione della probabilit\`a. Mostra anche una differenza
+rispetto agli esempi precedenti: con tre qubit e una soluzione,
+due iterazioni non portano al successo certo, pur rendendo $101$
+nettamente pi\`u probabile degli altri stati.
 \end{document}
