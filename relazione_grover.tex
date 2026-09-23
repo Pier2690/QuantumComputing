@@ -79,9 +79,16 @@ la CZ introduce il segno meno e la seconda $X$ ripristina lo stato iniziale:
  \xrightarrow{X_{q_0}} -|10\rangle.
 \]
 Gli altri stati vengono ripristinati senza cambiamenti di segno, perch\'e
-la prima $X$ non li porta in $|11\rangle$. L'effetto complessivo
-dell'oracolo \`e quindi invertire soltanto l'ampiezza della soluzione
-$|10\rangle$, senza modificarne i bit o la probabilit\`a di misura.
+la prima $X$ non li porta in $|11\rangle$.
+
+\begin{center}
+\setlength{\fboxsep}{10pt}
+\fbox{\parbox{\dimexpr\linewidth-2\fboxsep-2\fboxrule\relax}{%
+L'effetto complessivo dell'oracolo \`e quindi
+\textbf{invertire soltanto il segno dell'ampiezza} della soluzione
+$|10\rangle$, \textbf{senza modificarne i bit o la probabilit\`a di misura}.
+}}
+\end{center}
 
 Dopo l'oracolo, il diffusore applica $H$ e $X$ a entrambi i qubit,
 poi una seconda CZ, ancora realizzata con H--CNOT--H sul target,
@@ -109,8 +116,8 @@ Le porte $X$ e $H$ preparano l'ancilla nello stato
 L'oracolo \`e una Toffoli con i due qubit di ricerca come controlli
 e l'ancilla come target. Poich\'e $X|-\rangle=-|-\rangle$,
 quando entrambi i controlli valgono uno si introduce un segno meno
-nell'ampiezza corrispondente. Questo meccanismo si chiama
-\emph{phase kickback}: l'ancilla permette di modificare la fase dello stato
+nell'ampiezza corrispondente. Nel
+\emph{phase kickback} l'ancilla permette di modificare la fase dello stato
 $|11\rangle$, pur rimanendo nello stato $|-\rangle$.
 
 Per costruire il diffusore applico $H$ e $X$ sui qubit di ricerca,
