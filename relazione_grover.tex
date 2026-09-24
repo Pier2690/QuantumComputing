@@ -613,15 +613,57 @@ il costo di una chiamata cresce con il numero di stati da riconoscere.
 
 
 \paragraph{Numero di soluzioni ignoto.}
-Completo il capitolo 11 con una ricerca randomizzata: scelgo le iterazioni
-in un intervallo che cresce dopo i tentativi falliti, misuro un candidato
-e verifico classicamente se \`e valido. Ripeto la ricerca 100 volte
+Quando il numero di soluzioni $M$ non \`e noto, non posso calcolare
+direttamente il numero ottimale di iterazioni. Ripetere sempre lo stesso
+numero di iterazioni potrebbe far terminare ogni prova in un punto
+con bassa probabilit\`a di successo.
+Il metodo \href{https://arxiv.org/abs/quant-ph/9605034}{BBHT}, proposto da
+Boyer, Brassard, H\o yer e Tapp, affronta questo problema scegliendo
+casualmente quante iterazioni eseguire. A ogni tentativo preparo
+nuovamente il circuito, misuro un candidato e verifico classicamente
+se \`e una soluzione; in caso contrario amplio l'intervallo di scelta
+e riprovo.
+
+La scelta casuale \textbf{non elimina le oscillazioni della probabilit\`a},
+ma evita di usare sempre un numero di iterazioni sfavorevole.
+Non serve trovare esattamente un picco: basta campionare anche valori
+per cui la probabilit\`a di successo \`e sufficientemente alta.
+Se esistono soluzioni, ripetere i tentativi permette di aumentare
+la probabilit\`a complessiva di trovarne una, senza conoscere $M$.
+
+Nel capitolo 11 uso una variante di questa ricerca con un limite
+al numero di tentativi. Ripeto la ricerca 100 volte
 per ciascun valore di $M$, confrontando successi e chiamate all'oracolo.
 Il programma di ricerca non usa $M$ per scegliere le iterazioni;
 le soluzioni sono note al protocollo sperimentale per costruire
-l'oracolo e il controllo dei candidati. Il limite di 40 tentativi
-evita esecuzioni indefinite, ma un insuccesso entro questo limite
-non dimostra l'assenza di soluzioni.
+l'oracolo e il controllo dei candidati.
+
+
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[width=\textwidth]{Unknown1.png}
+    \caption{Riepilogo delle 100 ricerche randomizzate per ciascun valore
+    di $M$: successi e costi medi.}
+    \label{fig:unknown-riepilogo}
+\end{figure}
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[width=0.6\textwidth]{Unknown2.png}
+    \caption{Tentativi della prima ricerca con $M=1$:
+    la soluzione viene trovata all'ottavo tentativo.
+    La colonna \texttt{repetition=0} identifica la prima ricerca.}
+    \label{fig:unknown-tentativi}
+\end{figure}
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[width=0.6\textwidth]{Unknown3.png}
+    \caption{Distribuzione del costo della ricerca randomizzata,
+    calcolato come somma delle chiamate all'oracolo e delle verifiche classiche.}
+    \label{fig:unknown-costo}
+\end{figure}
 
 \subsection{Simulazione con un fake backend IBM}
 Nel capitolo 12 del notebook introduco del rumore attraverso i \href{https://quantum.cloud.ibm.com/docs/en/api/qiskit-ibm-runtime/fake-provider}{\emph{fake backend} IBM},
@@ -649,7 +691,6 @@ circuito secondo le porte e i collegamenti disponibili, poi eseguo
 lo stesso circuito compilato sia con rumore sia senza. In questo modo
 posso confrontare le frequenze ottenute nelle due condizioni con
 la probabilit\`a teorica di Grover.
-\newpage
 
 
 \paragraph{Lettura dei risultati.}
@@ -667,19 +708,23 @@ non costituiscono una classifica rigorosa delle prestazioni attuali delle QPU.
 \begin{figure}[!htbp]
     \centering
     \setlength{\abovecaptionskip}{3pt}
-    \includegraphics[width=0.95\textwidth,height=0.19\textheight,keepaspectratio]{ManilaV2.png}
+    \includegraphics[width=1\textwidth,height=0.19\textheight,keepaspectratio]{ManilaV2.png}
     \caption{Risultati con \texttt{FakeManilaV2}.}
     \label{fig:risultati-manila}
-    \par\smallskip
-    \includegraphics[width=0.95\textwidth,height=0.19\textheight,keepaspectratio]{NairobiV2.png}
+\end{figure}
+
+\begin{figure}[!htbp]
+    \centering
+    \setlength{\abovecaptionskip}{3pt}
+    \includegraphics[width=1\textwidth,height=0.19\textheight,keepaspectratio]{NairobiV2.png}
     \caption{Risultati con \texttt{FakeNairobiV2}.}
     \label{fig:risultati-nairobi}
     \par\smallskip
-    \includegraphics[width=0.95\textwidth,height=0.19\textheight,keepaspectratio]{MumbaiV2.png}
+    \includegraphics[width=1\textwidth,height=0.19\textheight,keepaspectratio]{MumbaiV2.png}
     \caption{Risultati con \texttt{FakeMumbaiV2}.}
     \label{fig:risultati-mumbai}
 \end{figure}
-
+\newpage
 \paragraph{Resoconto dei risultati.}
 \begin{itemize}
     \item \textbf{Picco anticipato.} Nei tre profili il massimo misurato
