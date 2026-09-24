@@ -743,5 +743,64 @@ non costituiscono una classifica rigorosa delle prestazioni attuali delle QPU.
     e dei circuiti compilati.
 \end{itemize}
 
+\subsection{Esecuzione su hardware IBM reale}
+Nel capitolo 13 passo dalle simulazioni all'esecuzione su una QPU IBM.
+Dopo una prima prova con 4 qubit, ho eseguito un confronto con
+2, 3, 4 e 5 qubit di ricerca sul backend \texttt{ibm\_fez}.
+In ogni caso cerco una sola soluzione, $|00\ldots01\rangle$,
+con 1024 shot e il numero di iterazioni scelto per il caso ideale:
+rispettivamente 1, 2, 3 e 4.
+
+\paragraph{Accesso e preparazione.}
+Ho utilizzato un account IBM Quantum Platform con un'istanza Open Plan
+(ottenuta tramite IBM Cloude, come indicato nel corso),
+configurando localmente le credenziali tramite \texttt{QiskitRuntimeService}
+con il nome \texttt{grover-open}. La chiave API permette l'autenticazione,
+mentre il CRN identifica l'istanza del servizio.
+Riutilizzo le funzioni del notebook per costruire i quattro circuiti
+e li compilo per le porte e la connettivit\`a del backend selezionato.
+A differenza del test ideale nella base \texttt{u}, \texttt{cx},
+questa compilazione tiene conto di uno specifico dispositivo fisico.
+
+\paragraph{Invio e salvataggio.}
+I quattro circuiti sono inviati con \texttt{SamplerV2} in un unico job,
+cos\`i da eseguirli sullo stesso backend. Il notebook salva subito
+l'identificativo del job e i parametri delle prove in un file JSON,
+per poter recuperare l'esecuzione senza inviarla nuovamente.
+Dopo l'attesa in coda e il completamento del job, salvo i conteggi
+e i riepiloghi in file JSON e CSV nella cartella \texttt{results}.
+
+\paragraph{Risultati ottenuti.}
+La tabella riporta i risultati salvati del confronto sul backend
+\texttt{ibm\_fez}. La frequenza di successo \`e il rapporto tra le
+misure della soluzione e i 1024 shot. Profondit\`a e porte a due qubit
+si riferiscono ai circuiti compilati associati al job salvato.
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[width=\textwidth]{Hard1.png}
+    \caption{Risultati delle prove su \texttt{ibm\_fez} con 2, 3, 4 e 5 qubit
+    e 1024 shot per circuito.}
+    \label{fig:hardware-risultati}
+\end{figure}
+
+Con 2 e 3 qubit la soluzione viene ancora individuata frequentemente;
+con 4 e soprattutto 5 qubit il successo diminuisce nettamente,
+nonostante la probabilit\`a ideale rimanga elevata.
+Parallelamente crescono profondit\`a e numero di porte a due qubit:
+il circuito richiede pi\`u operazioni ed \`e maggiormente esposto agli errori.
+Il numero di iterazioni ideale non \`e quindi necessariamente il migliore
+su hardware rumoroso; questa prova, questa prova è in linea con i risultati ottenuti
+in precedenza con i fake backends.
+
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[width=\textwidth]{Hard2.png}
+    \caption{Confronto tra successo ideale e misurato su hardware IBM
+    e crescita delle risorse del circuito compilato al variare dei qubit.}
+    \label{fig:hardware-successo-risorse}
+\end{figure}
+
 \end{document}
 
