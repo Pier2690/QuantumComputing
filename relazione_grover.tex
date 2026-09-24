@@ -481,10 +481,43 @@ dopo l'oracolo e dopo il diffusore, considerando una sola iterazione.
 
 \begin{figure}[!htbp]
     \centering
-    \includegraphics[width=\textwidth]{6.2-TabellaAmpiezze.png}
+    \includegraphics[width=0.8\textwidth]{6.2-TabellaAmpiezze.png}
     \caption{Ampiezze degli otto stati prima dell'oracolo, dopo l'oracolo
     e dopo il diffusore, per una singola iterazione con soluzione $|101\rangle$.}
     \label{fig:tabella-ampiezze}
+\end{figure}
+
+\paragraph{Stima del numero di iterazioni.}
+Nel punto 8 del notebook calcolo quante iterazioni eseguire per fermarmi
+vicino al primo massimo della probabilit\`a di successo. Con $N=2^n$
+stati e $M$ soluzioni, calcolo prima $\theta=\arcsin\sqrt{M/N}$ e poi
+\[
+    k_* = \frac{\pi}{4\theta}-\frac{1}{2}.
+\]
+Il valore $k_*$ \`e continuo: il codice confronta la probabilit\`a
+$P(k)=\sin^2((2k+1)\theta)$ nei due interi non negativi vicini e sceglie
+quello con probabilit\`a maggiore, preferendo il minore in caso di parit\`a.
+Per poche soluzioni rispetto a $N$, uso l'approssimazione
+$\theta\simeq\sqrt{M/N}$, da cui
+\[
+    k_*\simeq\frac{\pi}{4}\sqrt{\frac{N}{M}}-\frac{1}{2}.
+    \qquad
+    \text{Se }M=1:\quad
+    k_*\simeq\frac{\pi}{4}\sqrt{N}-\frac{1}{2}.
+\]
+La tabella confronta tre valori: \texttt{approximate\_k} \`e la stima
+pi\`u semplice $(\pi/4)\sqrt{N/M}$, che trascura anche il termine $-1/2$;
+\texttt{first\_continuous\_maximum} \`e $k_*$ calcolato con l'arcoseno;
+\texttt{chosen\_k} \`e il numero intero scelto dal codice.
+Con una sola soluzione e 2, 3 e 4 qubit ottengo rispettivamente
+1, 2 e 3 iterazioni.
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[width=0.75\textwidth]{8.StimaTeorica.png}
+    \caption{Confronto tra la stima approssimata, il primo massimo continuo
+    e il numero di iterazioni scelto nel punto 8 del notebook.}
+    \label{fig:stima-teorica-iterazioni}
 \end{figure}
 
 \end{document}
