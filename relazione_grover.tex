@@ -25,7 +25,7 @@
 In questo progetto studio l'algoritmo di Grover
 (\href{https://arxiv.org/abs/quant-ph/9605043}{paper originale}), che permette di cercare una
 soluzione in uno spazio non strutturato mediante l'amplificazione delle
-ampiezze. L'obiettivo degli esperimenti \`e capire come cambia la probabilit\`a
+ampiezze. L'obiettivo degli esperimenti è capire come cambia la probabilità
 di successo al variare del numero di iterazioni e quanto il comportamento
 ideale si discosta da quello osservato in presenza di rumore.
 
@@ -34,7 +34,7 @@ Il percorso parte dalla costruzione visuale dei circuiti con
 \href{https://quantum.cloud.ibm.com/docs/en/guides/composer}{IBM Quantum Composer}.
 Prosegue con piccoli esercizi in Python usando
 \href{https://quantumai.google/cirq}{Cirq di Google Quantum AI}, per seguire
-passo dopo passo l'evoluzione delle ampiezze e confrontare le probabilit\`a
+passo dopo passo l'evoluzione delle ampiezze e confrontare le probabilità
 ideali con le frequenze ottenute dalle misure simulate.
 Infine utilizzo \href{https://qiskit.org/}{Qiskit} per approfondire le
 simulazioni ideali e con rumore e svolgere prove su hardware reale tramite
@@ -55,25 +55,25 @@ possibili. Le porte Hadamard iniziali preparano la sovrapposizione uniforme:
 \[
  |s\rangle=\frac{|00\rangle+|01\rangle+|10\rangle+|11\rangle}{2}.
 \]
-Inizialmente, ciascuno dei quattro stati ha probabilit\`a $1/4$ di essere
+Inizialmente, ciascuno dei quattro stati ha probabilità $1/4$ di essere
 misurato. L'oracolo inverte il segno dell'ampiezza dello stato cercato,
-senza modificarne la probabilit\`a; il diffusore sfrutta questa differenza
+senza modificarne la probabilità; il diffusore sfrutta questa differenza
 di fase per amplificarne l'ampiezza. In entrambi i circuiti ho applicato
 una sola iterazione di Grover, composta da oracolo e diffusore.
 Nel seguito rappresento gli stati nell'ordine $|q_1q_0\rangle$:
-il qubit $q_0$, disegnato in alto nel circuito, corrisponde al bit pi\`u
+il qubit $q_0$, disegnato in alto nel circuito, corrisponde al bit più
 a destra nella stringa. Mantengo questa convenzione in tutta la relazione
 per rendere univoca la lettura degli stati.
 \newpage
 \subsection{Quantum Programming Studio: circuito senza ancilla}
 Nel primo circuito ho utilizzato soltanto i due qubit di ricerca.
-L'oracolo \`e costruito con porte $X$, Hadamard e una CNOT.
+L'oracolo è costruito con porte $X$, Hadamard e una CNOT.
 Una Hadamard sul target prima e dopo la CNOT permette di ottenere
 una porta controlled-$Z$:
 \[
  H_{q_1}\,\mathrm{CNOT}_{q_0\to q_1}\,H_{q_1}=\mathrm{CZ},
 \]
-dove $q_0$ \`e il controllo della CNOT e $q_1$ il suo target.
+dove $q_0$ è il controllo della CNOT e $q_1$ il suo target.
 La CZ lascia invariati gli stati della base, tranne $|11\rangle$,
 di cui inverte il segno dell'ampiezza. Per marcare invece $|10\rangle$,
 applico una porta $X$ su $q_0$ prima e dopo questo blocco.
@@ -84,15 +84,15 @@ la CZ introduce il segno meno e la seconda $X$ ripristina lo stato iniziale:
  \xrightarrow{\mathrm{CZ}} -|11\rangle
  \xrightarrow{X_{q_0}} -|10\rangle.
 \]
-Gli altri stati vengono ripristinati senza cambiamenti di segno, perch\'e
+Gli altri stati vengono ripristinati senza cambiamenti di segno, perché
 la prima $X$ non li porta in $|11\rangle$.
 
 \begin{center}
 \setlength{\fboxsep}{10pt}
 \fbox{\parbox{\dimexpr\linewidth-2\fboxsep-2\fboxrule\relax}{%
-L'effetto complessivo dell'oracolo \`e quindi
+L'effetto complessivo dell'oracolo è quindi
 \textbf{invertire soltanto il segno dell'ampiezza} della soluzione
-$|10\rangle$, \textbf{senza modificarne i bit o la probabilit\`a di misura}.
+$|10\rangle$, \textbf{senza modificarne i bit o la probabilità di misura}.
 }}
 \end{center}
 
@@ -125,8 +125,8 @@ Le porte $X$ e $H$ preparano l'ancilla nello stato
 \[
  |-\rangle=\frac{|0\rangle-|1\rangle}{\sqrt{2}}.
 \]
-L'oracolo \`e una Toffoli con i due qubit di ricerca come controlli
-e l'ancilla come target. Poich\'e $X|-\rangle=-|-\rangle$,
+L'oracolo è una Toffoli con i due qubit di ricerca come controlli
+e l'ancilla come target. Poiché $X|-\rangle=-|-\rangle$,
 quando entrambi i controlli valgono uno si introduce un segno meno
 nell'ampiezza corrispondente. Nel
 \emph{phase kickback} l'ancilla permette di modificare la fase dello stato
@@ -135,12 +135,12 @@ $|11\rangle$, pur rimanendo nello stato $|-\rangle$.
 Per costruire il diffusore applico $H$ e $X$ sui qubit di ricerca,
 riutilizzo la Toffoli con la stessa ancilla, quindi applico nuovamente
 $X$ e $H$. Alla fine misuro soltanto i due qubit di ricerca.
-In Figura~\ref{fig:composer}, l'ancilla \`e la linea \texttt{anc[0]}.
+In Figura~\ref{fig:composer}, l'ancilla è la linea \texttt{anc[0]}.
 
 \begin{center}
 \setlength{\fboxsep}{10pt}
 \fbox{\parbox{\dimexpr\linewidth-2\fboxsep-2\fboxrule\relax}{%
-\textbf{Perch\'e uso una porta $X$ sull'ancilla?}
+\textbf{Perché uso una porta $X$ sull'ancilla?}
 
 Nello schema mostrato a lezione, il cambio di segno viene ottenuto
 con una porta $Z$ controllata, applicata direttamente ai qubit di ricerca.
@@ -148,9 +148,9 @@ Nel mio circuito ottengo lo stesso effetto con una Toffoli e un qubit
 aggiuntivo: l'ancilla. Per far funzionare questo meccanismo, preparo
 l'ancilla in $|-\rangle$ applicando prima $X$ e poi $H$.
 Quando i due controlli valgono uno, la Toffoli applica una $X$ all'ancilla:
-poich\'e $X|-\rangle=-|-\rangle$, cambia il segno dell'ampiezza
+poiché $X|-\rangle=-|-\rangle$, cambia il segno dell'ampiezza
 corrispondente nel registro di ricerca. Le porte $H$ e $X$ sui qubit di ricerca
-rimangono necessarie per completare il diffusore. I due modi di costruirlo producono le stesse probabilit\`a di misura
+rimangono necessarie per completare il diffusore. I due modi di costruirlo producono le stesse probabilità di misura
 }}
 \end{center}
 
@@ -177,15 +177,15 @@ imposto dai due strumenti grafici. Inoltre i target sono diversi:
 $|10\rangle$ nel primo circuito e $|11\rangle$ nel secondo.
 
 Dopo l'oracolo l'ampiezza della soluzione vale $-1/2$ e le altre valgono
-$1/2$. La loro media \`e $1/4$: il diffusore standard trasforma
+$1/2$. La loro media è $1/4$: il diffusore standard trasforma
 ogni ampiezza $a$ in $2\overline{a}-a$, portando quella della soluzione a 1
 e le altre a 0. Le sequenze mostrate realizzano il diffusore a meno
-di un segno globale, che non modifica le probabilit\`a di misura.
+di un segno globale, che non modifica le probabilità di misura.
 \section{Esercizio svolto con Cirq di Google Quantum AI}
 Dopo i circuiti costruiti con gli strumenti visuali, ho realizzato un
 piccolo esperimento in Python con
 \href{https://quantumai.google/cirq}{Cirq di Google Quantum AI}.
-Come Qiskit, Cirq \`e una libreria Python; una sua particolarit\`a \`e
+Come Qiskit, Cirq è una libreria Python; una sua particolarità è
 organizzare esplicitamente il circuito in \href{https://quantumai.google/cirq/build/circuits}{momenti},
 raggruppando le operazioni su qubit distinti: una struttura comoda per
 seguire la simulazione passo dopo passo.
@@ -205,7 +205,7 @@ Ho mantenuto la costruzione con ancilla usata in Composer: il circuito
 contiene quindi quattro qubit totali, ma solo tre codificano la soluzione.
 Per selezionare $|101\rangle$, invece di $|111\rangle$, inserisco una $X$
 sul qubit centrale $q_1$ prima e dopo questa porta.
-Il phase kickback cambia cos\`i il segno della sola ampiezza cercata.
+Il phase kickback cambia così il segno della sola ampiezza cercata.
 Il diffusore riutilizza la stessa ancilla, con le porte $H$ e $X$ sui
 qubit di ricerca prima del blocco controllato e $X$ e $H$ dopo.
 
@@ -213,14 +213,14 @@ qubit di ricerca prima del blocco controllato e $X$ e $H$ dopo.
 \newpage    
 \paragraph{Osservazione dei passaggi.}
 Nel notebook stampo il circuito durante la costruzione e seguo la
-simulazione dopo ogni \emph{momento}, cio\`e un gruppo di operazioni su
+simulazione dopo ogni \emph{momento}, cioè un gruppo di operazioni su
 qubit distinti. Per ogni stato di ricerca mostro le due ampiezze associate
-ai valori zero e uno dell'ancilla. La probabilit\`a del registro di ricerca
+ai valori zero e uno dell'ancilla. La probabilità del registro di ricerca
 si ottiene sommando i moduli al quadrato di queste due ampiezze.
 Queste informazioni sono disponibili nel simulatore: non sono misure
 intermedie inserite nel circuito.
 Le stampe permettono di osservare che l'oracolo completo cambia il segno
-delle ampiezze senza cambiare le probabilit\`a, mentre il diffusore
+delle ampiezze senza cambiare le probabilità, mentre il diffusore
 aumenta quella della soluzione. Verifico inoltre che, dopo la preparazione,
 l'ancilla rimanga nello stato $|-\rangle$.
 
@@ -269,9 +269,9 @@ come cambia la distribuzione sugli otto stati; per la soluzione si ottiene:
 \begin{figure}[!htbp]
     \centering
     \includegraphics[width=\textwidth]{CirqRisultato.png}
-    \caption{Distribuzione delle probabilit\`a nella simulazione con Cirq:
+    \caption{Distribuzione delle probabilità nella simulazione con Cirq:
     sovrapposizione iniziale e risultati dopo il primo e il secondo diffusore.
-    Lo stato cercato $|101\rangle$ \`e evidenziato in arancione.}
+    Lo stato cercato $|101\rangle$ è evidenziato in arancione.}
     \label{fig:cirq-risultato}
 \end{figure}
 \\
@@ -300,26 +300,26 @@ con una frequenza di circa $94{,}14\%$.
 \section{Studio Sperimentale con Qiskit di IBM Quantum e hardware reale}
 
 Dopo i primi esercizi, ho approfondito lo studio di Grover nel notebook
-\texttt{Grover.ipynb}, utilizzando Qiskit. L'obiettivo \`e verificare
+\texttt{Grover.ipynb}, utilizzando Qiskit. L'obiettivo è verificare
 il comportamento previsto dalla teoria e capire come cambiano i risultati
-quando si passa dalla simulazione ideale a condizioni pi\`u vicine a quelle
+quando si passa dalla simulazione ideale a condizioni più vicine a quelle
 di un dispositivo reale.\\
 
-\noindent Ho organizzato gli esperimenti in tre modalit\`a: 
+\noindent Ho organizzato gli esperimenti in tre modalità: 
 \begin{itemize}
     \item simulazione ideale,
     \item simulazione con rumore ricavato dai profili dei dispositivi IBM
     (\emph{fake backend}),
     \item esecuzione su hardware quantistico IBM.
 \end{itemize}
-Nella simulazione ideale confronto le probabilit\`a ricavate dal vettore
+Nella simulazione ideale confronto le probabilità ricavate dal vettore
 di stato con le frequenze osservate nelle misure, per mettere in evidenza
 le fluttuazioni dovute al numero finito di ripetizioni. Studio inoltre
 il caso in cui il numero di soluzioni non sia noto, scegliendo casualmente
-quante iterazioni eseguire e verifico se il risultato \`e una soluzione valida.
+quante iterazioni eseguire e verifico se il risultato è una soluzione valida.
 Passo poi alle simulazioni con rumore e alle prove su hardware reale,
 per osservare come gli errori delle porte e della lettura modifichino
-la probabilit\`a di successo rispetto al caso ideale.
+la probabilità di successo rispetto al caso ideale.
 
 
 \subsection{Ambiente di lavoro e strumenti utilizzati}
@@ -336,14 +336,14 @@ la probabilit\`a di successo rispetto al caso ideale.
     Uso \texttt{QuantumCircuit} per costruire l'oracolo, il diffusore e
     il circuito completo, inserendo esplicitamente le porte e le misure.
     Le classi \texttt{Operator} e \texttt{Statevector} permettono di
-    controllare gli operatori e calcolare ampiezze e probabilit\`a ideali.\\
+    controllare gli operatori e calcolare ampiezze e probabilità ideali.\\
     \href{https://quantum.cloud.ibm.com/docs/en/api/qiskit}{documentazione Qiskit}.
 
     \item \textbf{Transpiler di Qiskit.}
     Uso \texttt{transpile} e il generatore di pass manager\\
     \texttt{generate\_preset\_pass\_manager} per adattare i circuiti
     alle porte e ai collegamenti disponibili sul backend scelto.
-    Questo passaggio \`e necessario soprattutto prima dell'esecuzione
+    Questo passaggio è necessario soprattutto prima dell'esecuzione
     sull'hardware reale.\\
     \href{https://quantum.cloud.ibm.com/docs/en/api/qiskit/transpiler}{transpiler di Qiskit}.
 
@@ -396,15 +396,15 @@ Ogni iterazione applica poi due operazioni:
             |x\rangle & \text{altrimenti}.
         \end{cases}
     \]
-    Questo passaggio modifica le fasi, ma non le probabilit\`a di misura.
+    Questo passaggio modifica le fasi, ma non le probabilità di misura.
     \item \textbf{Diffusore.} Applica la riflessione
     $D=2|s\rangle\langle s|-I$, che trasforma ogni ampiezza $a_x$
-    in $2\overline{a}-a_x$, dove $\overline{a}$ \`e la media delle ampiezze.
+    in $2\overline{a}-a_x$, dove $\overline{a}$ è la media delle ampiezze.
     Insieme all'oracolo, permette di amplificare le soluzioni.
 \end{enumerate}
-Dopo $k$ iterazioni lo stato \`e $(DO_W)^k|s\rangle$ e la misura
-restituisce una stringa candidata. Nel caso ideale la probabilit\`a
-complessiva di ottenere una soluzione \`e
+Dopo $k$ iterazioni lo stato è $(DO_W)^k|s\rangle$ e la misura
+restituisce una stringa candidata. Nel caso ideale la probabilità
+complessiva di ottenere una soluzione è
 \[
     P(k)=\sin^2((2k+1)\theta),\qquad
     \theta=\arcsin\sqrt{\frac{M}{N}}.
@@ -412,18 +412,18 @@ complessiva di ottenere una soluzione \`e
 \newpage
 
 \paragraph{Codice sorgente e scelte implementative.}
-Il codice \`e scritto in Python con Qiskit e si trova nelle sezioni
+Il codice è scritto in Python con Qiskit e si trova nelle sezioni
 5--8 di \texttt{Grover.ipynb}. Le funzioni principali sono:
 \begin{itemize}
     \item \texttt{build\_phase\_oracle}: per ogni soluzione applica
     $X$ ai qubit corrispondenti ai bit zero, una $Z$ multicontrollata
     e infine applica nuovamente le stesse $X$ per ripristinare i bit.
     Il cambio di fase su $|11\ldots1\rangle$
-    viene cos\`i trasferito alla stringa desiderata.
+    viene così trasferito alla stringa desiderata.
     \item \texttt{build\_diffuser}: usa \texttt{grover\_operator} con
-    un oracolo identit\`a per ottenere soltanto il diffusore $D$.
+    un oracolo identità per ottenere soltanto il diffusore $D$.
     La fase globale necessaria al confronto delle ampiezze
-    \`e gi\`a inclusa da Qiskit e non viene aggiunta nuovamente.
+    è già inclusa da Qiskit e non viene aggiunta nuovamente.
     \item \texttt{build\_grover\_circuit}: prepara la sovrapposizione
     uniforme con le Hadamard e, a ogni iterazione, applica prima
     l'oracolo e poi il diffusore. Ripete questo blocco il numero richiesto di volte
@@ -444,16 +444,16 @@ e ai parametri utilizzati negli esperimenti del notebook:
     il \href{https://quantum.cloud.ibm.com/docs/en/tutorials/grovers-algorithm}{tutorial IBM sull'algoritmo di Grover}
     presenta la funzione \texttt{grover\_oracle}, che applica $X$ ai bit
     zero della soluzione, una $Z$ multicontrollata e infine le stesse $X$.
-    La funzione \texttt{build\_phase\_oracle} \`e un adattamento di
+    La funzione \texttt{build\_phase\_oracle} è un adattamento di
     questo codice: mantiene l'inversione della stringa per rispettare
     l'ordine dei qubit e usa la stessa porta \texttt{MCMTGate} con
     \texttt{ZGate}.
     \item \textbf{Diffusore:}
     la \href{https://quantum.cloud.ibm.com/docs/en/api/qiskit/qiskit.circuit.library.grover_operator}{documentazione Qiskit di \texttt{grover\_operator}}
     viene utilizzata direttamente nella funzione \texttt{build\_diffuser}.
-    Poich\'e \texttt{grover\_operator} costruisce il prodotto $DO$,
-    passo come oracolo un circuito vuoto, che realizza l'identit\`a:
-    ottengo cos\`i soltanto $D$.
+    Poiché \texttt{grover\_operator} costruisce il prodotto $DO$,
+    passo come oracolo un circuito vuoto, che realizza l'identità:
+    ottengo così soltanto $D$.
 \end{itemize}
 Il codice utilizza quindi esempi e strumenti forniti da IBM, evitando cosi costruzioni sviluppate da zero.
 
@@ -489,14 +489,14 @@ dopo l'oracolo e dopo il diffusore, considerando una sola iterazione.
 
 \paragraph{Stima del numero di iterazioni.}
 Nel punto 8 del notebook calcolo quante iterazioni eseguire per fermarmi
-vicino al primo massimo della probabilit\`a di successo. Con $N=2^n$
+vicino al primo massimo della probabilità di successo. Con $N=2^n$
 stati e $M$ soluzioni, calcolo prima $\theta=\arcsin\sqrt{M/N}$ e poi
 \[
     k_* = \frac{\pi}{4\theta}-\frac{1}{2}.
 \]
-Il valore $k_*$ \`e continuo: il codice confronta la probabilit\`a
+Il valore $k_*$ è continuo: il codice confronta la probabilità
 $P(k)=\sin^2((2k+1)\theta)$ nei due interi non negativi vicini e sceglie
-quello con probabilit\`a maggiore, preferendo il minore in caso di parit\`a.
+quello con probabilità maggiore, preferendo il minore in caso di parità.
 Per poche soluzioni rispetto a $N$, uso l'approssimazione
 $\theta\simeq\sqrt{M/N}$, da cui
 \[
@@ -505,10 +505,10 @@ $\theta\simeq\sqrt{M/N}$, da cui
     \text{Se }M=1:\quad
     k_*\simeq\frac{\pi}{4}\sqrt{N}-\frac{1}{2}.
 \]
-La tabella confronta tre valori: \texttt{approximate\_k} \`e la stima
-pi\`u semplice $(\pi/4)\sqrt{N/M}$, che trascura anche il termine $-1/2$;
-\texttt{first\_continuous\_maximum} \`e $k_*$ calcolato con l'arcoseno;
-\texttt{chosen\_k} \`e il numero intero scelto dal codice.
+La tabella confronta tre valori: \texttt{approximate\_k} è la stima
+più semplice $(\pi/4)\sqrt{N/M}$, che trascura anche il termine $-1/2$;
+\texttt{first\_continuous\_maximum} è $k_*$ calcolato con l'arcoseno;
+\texttt{chosen\_k} è il numero intero scelto dal codice.
 Con una sola soluzione e 2, 3 e 4 qubit ottengo rispettivamente
 1, 2 e 3 iterazioni.
 
@@ -523,7 +523,7 @@ Con una sola soluzione e 2, 3 e 4 qubit ottengo rispettivamente
 \clearpage
 \subsection{Verifiche ideali}
 Nel capitolo 9 confronto teoria e simulazione senza rumore.
-Con \texttt{Statevector} verifico le probabilit\`a per 2, 3 e 4 qubit
+Con \texttt{Statevector} verifico le probabilità per 2, 3 e 4 qubit
  e da 0 a 8 iterazioni, con tolleranza assoluta $10^{-12}$.
 Osservo amplificazione e overshooting.
 
@@ -536,7 +536,7 @@ Osservo amplificazione e overshooting.
 
 Con \texttt{AerSimulator} eseguo poi 4096 shot per circuiti da 2 a 6 qubit,
 con iterazioni vicine al primo massimo. Confronto la frequenza
-(successi/shot) con la probabilit\`a teorica: gli scarti sono dovuti
+(successi/shot) con la probabilità teorica: gli scarti sono dovuti
 al campionamento, anche in assenza di rumore.
 
 \begin{figure}[!htbp]
@@ -548,13 +548,13 @@ al campionamento, anche in assenza di rumore.
 
 Infine ripeto quattro volte il circuito con 4 qubit e 3 iterazioni,
 con 4096 shot per prova e semi diversi, per osservare le fluttuazioni
-rispetto alla stessa probabilit\`a teorica.
+rispetto alla stessa probabilità teorica.
 
 \begin{figure}[!htbp]
     \centering
     \includegraphics[width=0.5\textwidth]{9.3-4Qbit3Iterazioni.png}
     \caption{Quattro prove con 4 qubit, 3 iterazioni e 4096 shot ciascuna:
-    confronto delle frequenze di successo con la probabilit\`a teorica.}
+    confronto delle frequenze di successo con la probabilità teorica.}
     \label{fig:quattro-prove-ideali}
 \end{figure}
 
@@ -569,12 +569,12 @@ da 4 a 128 stati. Mantengo una sola soluzione, $|00\ldots01\rangle$,
 e scelgo per ogni dimensione il numero intero di iterazioni vicino
 al primo massimo teorico.
 La tabella e i grafici confrontano le iterazioni con la stima
-$(\pi/4)\sqrt{N}$ e riportano profondit\`a, numero totale di porte
+$(\pi/4)\sqrt{N}$ e riportano profondità, numero totale di porte
 e numero di porte a due qubit del circuito compilato nella base
 \texttt{u}, \texttt{cx}.
 Questo confronto distingue il numero di chiamate all'oracolo dal costo
 necessario a realizzarle: aumentando i qubit, anche una singola
-iterazione richiede una costruzione pi\`u articolata (questo anticipa già il problema che avremo
+iterazione richiede una costruzione più articolata (questo anticipa già il problema che avremo
 con l'introduzione di rumore).
 
 \begin{figure}[!htbp]
@@ -594,7 +594,7 @@ Confronto le frequenze con $P(k)=\sin^2((2k+1)\theta)$,
 dove $\theta=\arcsin\sqrt{M/N}$.
 Aumentando le soluzioni, il primo massimo viene raggiunto con meno
 iterazioni.
-Questo non implica per\`o che il circuito richieda sempre meno porte:
+Questo non implica però che il circuito richieda sempre meno porte:
 nel mio oracolo ogni soluzione viene marcata separatamente, quindi
 il costo di una chiamata cresce con il numero di stati da riconoscere.
 
@@ -602,34 +602,34 @@ il costo di una chiamata cresce con il numero di stati da riconoscere.
     \centering
     \includegraphics[width=0.9\textwidth]{Multi1.png}
     \caption{Risultati per $N=32$ e diversi numeri di soluzioni:
-    iterazioni scelte, probabilit\`a teoriche e frequenze misurate.}
+    iterazioni scelte, probabilità teoriche e frequenze misurate.}
     \label{fig:multi-tabella}
     \par\medskip
     \includegraphics[width=\textwidth]{Multi2.png}
-    \caption{Iterazioni ottimali e probabilit\`a di successo al variare
+    \caption{Iterazioni ottimali e probabilità di successo al variare
     del numero di soluzioni, con 4096 shot per circuito.}
     \label{fig:multi-grafici}
 \end{figure}
 
 
 \paragraph{Numero di soluzioni ignoto.}
-Quando il numero di soluzioni $M$ non \`e noto, non posso calcolare
+Quando il numero di soluzioni $M$ non è noto, non posso calcolare
 direttamente il numero ottimale di iterazioni. Ripetere sempre lo stesso
 numero di iterazioni potrebbe far terminare ogni prova in un punto
-con bassa probabilit\`a di successo.
+con bassa probabilità di successo.
 Il metodo \href{https://arxiv.org/abs/quant-ph/9605034}{BBHT}, proposto da
-Boyer, Brassard, H\o yer e Tapp, affronta questo problema scegliendo
+Boyer, Brassard, Hoyer e Tapp, affronta questo problema scegliendo
 casualmente quante iterazioni eseguire. A ogni tentativo preparo
 nuovamente il circuito, misuro un candidato e verifico classicamente
-se \`e una soluzione; in caso contrario amplio l'intervallo di scelta
+se è una soluzione; in caso contrario amplio l'intervallo di scelta
 e riprovo.
 
-La scelta casuale \textbf{non elimina le oscillazioni della probabilit\`a},
+La scelta casuale \textbf{non elimina le oscillazioni della probabilità},
 ma evita di usare sempre un numero di iterazioni sfavorevole.
 Non serve trovare esattamente un picco: basta campionare anche valori
-per cui la probabilit\`a di successo \`e sufficientemente alta.
+per cui la probabilità di successo è sufficientemente alta.
 Se esistono soluzioni, ripetere i tentativi permette di aumentare
-la probabilit\`a complessiva di trovarne una, senza conoscere $M$.
+la probabilità complessiva di trovarne una, senza conoscere $M$.
 
 Nel capitolo 11 uso una variante di questa ricerca con un limite
 al numero di tentativi. Ripeto la ricerca 100 volte
@@ -667,12 +667,12 @@ l'oracolo e il controllo dei candidati.
 
 \subsection{Simulazione con un fake backend IBM}
 Nel capitolo 12 del notebook introduco del rumore attraverso i \href{https://quantum.cloud.ibm.com/docs/en/api/qiskit-ibm-runtime/fake-provider}{\emph{fake backend} IBM},
-cio\`e profili salvati che descrivono le porte, i collegamenti tra qubit
+cioè profili salvati che descrivono le porte, i collegamenti tra qubit
 e alcuni parametri di errore dei dispositivi. Con
 \texttt{AerSimulator.from\_backend} costruisco un simulatore che utilizza
 questi dati per modellare gli errori delle porte, il rilassamento e
 gli errori di lettura. Le prove avvengono in locale, senza accedere
-all'hardware IBM: il modello \`e un'approssimazione basata sul profilo
+all'hardware IBM: il modello è un'approssimazione basata sul profilo
 salvato, non una replica esatta delle condizioni attuali del processore.
 
 \paragraph{Impostazione delle prove.}
@@ -690,7 +690,7 @@ che rimane di quattro qubit logici. Per ciascun backend compilo il
 circuito secondo le porte e i collegamenti disponibili, poi eseguo
 lo stesso circuito compilato sia con rumore sia senza. In questo modo
 posso confrontare le frequenze ottenute nelle due condizioni con
-la probabilit\`a teorica di Grover.
+la probabilità teorica di Grover.
 
 
 \paragraph{Lettura dei risultati.}
@@ -728,13 +728,13 @@ non costituiscono una classifica rigorosa delle prestazioni attuali delle QPU.
 \paragraph{Resoconto dei risultati.}
 \begin{itemize}
     \item \textbf{Picco anticipato.} Nei tre profili il massimo misurato
-    si trova a 2 iterazioni, mentre quello ideale \`e a 3. L'aggiunta
+    si trova a 2 iterazioni, mentre quello ideale è a 3. L'aggiunta
     della terza iterazione riduce quindi il successo: nel modello
     rumoroso gli errori accumulati prevalgono sul beneficio atteso
     dall'ulteriore amplificazione.
-    \item \textbf{Manila.} La frequenza massima \`e circa il $22{,}46\%$,
+    \item \textbf{Manila.} La frequenza massima è circa il $22{,}46\%$,
     contro il $14{,}48\%$ a 3 iterazioni. Il massimo a 2 iterazioni
-    \`e comunque molto vicino al $22{,}05\%$ ottenuto con una sola:
+    è comunque molto vicino al $22{,}05\%$ ottenuto con una sola:
     questa piccola differenza va letta tenendo conto delle fluttuazioni
     statistiche.
     \item \textbf{Mumbai e Nairobi.} Raggiungono rispettivamente
@@ -758,13 +758,13 @@ configurando localmente le credenziali tramite \texttt{QiskitRuntimeService}
 con il nome \texttt{grover-open}. La chiave API permette l'autenticazione,
 mentre il CRN identifica l'istanza del servizio.
 Riutilizzo le funzioni del notebook per costruire i quattro circuiti
-e li compilo per le porte e la connettivit\`a del backend selezionato.
+e li compilo per le porte e la connettività del backend selezionato.
 A differenza del test ideale nella base \texttt{u}, \texttt{cx},
 questa compilazione tiene conto di uno specifico dispositivo fisico.
 
 \paragraph{Invio e salvataggio.}
 I quattro circuiti sono inviati con \texttt{SamplerV2} in un unico job,
-cos\`i da eseguirli sullo stesso backend. Il notebook salva subito
+così da eseguirli sullo stesso backend. Il notebook salva subito
 l'identificativo del job e i parametri delle prove in un file JSON,
 per poter recuperare l'esecuzione senza inviarla nuovamente.
 Dopo l'attesa in coda e il completamento del job, salvo i conteggi
@@ -772,8 +772,8 @@ e i riepiloghi in file JSON e CSV nella cartella \texttt{results}.
 
 \paragraph{Risultati ottenuti.}
 La tabella riporta i risultati salvati del confronto sul backend
-\texttt{ibm\_fez}. La frequenza di successo \`e il rapporto tra le
-misure della soluzione e i 1024 shot. Profondit\`a e porte a due qubit
+\texttt{ibm\_fez}. La frequenza di successo è il rapporto tra le
+misure della soluzione e i 1024 shot. Profondità e porte a due qubit
 si riferiscono ai circuiti compilati associati al job salvato.
 
 \begin{figure}[!htbp]
@@ -786,10 +786,10 @@ si riferiscono ai circuiti compilati associati al job salvato.
 
 Con 2 e 3 qubit la soluzione viene ancora individuata frequentemente;
 con 4 e soprattutto 5 qubit il successo diminuisce nettamente,
-nonostante la probabilit\`a ideale rimanga elevata.
-Parallelamente crescono profondit\`a e numero di porte a due qubit:
-il circuito richiede pi\`u operazioni ed \`e maggiormente esposto agli errori.
-Il numero di iterazioni ideale non \`e quindi necessariamente il migliore
+nonostante la probabilità ideale rimanga elevata.
+Parallelamente crescono profondità e numero di porte a due qubit:
+il circuito richiede più operazioni ed è maggiormente esposto agli errori.
+Il numero di iterazioni ideale non è quindi necessariamente il migliore
 su hardware rumoroso; questa prova, questa prova è in linea con i risultati ottenuti
 in precedenza con i fake backends.
 
