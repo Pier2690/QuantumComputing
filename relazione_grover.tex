@@ -520,4 +520,117 @@ Con una sola soluzione e 2, 3 e 4 qubit ottengo rispettivamente
     \label{fig:stima-teorica-iterazioni}
 \end{figure}
 
+\clearpage
+\subsection{Verifiche ideali}
+Nel capitolo 9 confronto teoria e simulazione senza rumore.
+Con \texttt{Statevector} verifico le probabilit\`a per 2, 3 e 4 qubit
+ e da 0 a 8 iterazioni, con tolleranza assoluta $10^{-12}$.
+Osservo amplificazione e overshooting.
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[width=0.7\textwidth]{9.1-SimulazioneStateVector.png}
+    \caption{Teoria e \texttt{Statevector}: estratto per 2 e 3 qubit.}
+    \label{fig:simulazione-statevector}
+\end{figure}
+
+Con \texttt{AerSimulator} eseguo poi 4096 shot per circuiti da 2 a 6 qubit,
+con iterazioni vicine al primo massimo. Confronto la frequenza
+(successi/shot) con la probabilit\`a teorica: gli scarti sono dovuti
+al campionamento, anche in assenza di rumore.
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[width=0.7\textwidth]{9.2-MisureSimulateShots.png}
+    \caption{Misure simulate con 4096 shot: estratto per 2 e 3 qubit.}
+    \label{fig:misure-simulate-shots}
+\end{figure}
+
+Infine ripeto quattro volte il circuito con 4 qubit e 3 iterazioni,
+con 4096 shot per prova e semi diversi, per osservare le fluttuazioni
+rispetto alla stessa probabilit\`a teorica.
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[width=0.7\textwidth]{9.3-4Qbit3Iterazioni.png}
+    \caption{Quattro prove con 4 qubit, 3 iterazioni e 4096 shot ciascuna:
+    confronto delle frequenze di successo con la probabilit\`a teorica.}
+    \label{fig:quattro-prove-ideali}
+\end{figure}
+
+\subsection{Simulazione con un fake backend IBM}
+Nel capitolo 10 del notebook introduco del rumore attraverso i \href{https://quantum.cloud.ibm.com/docs/en/api/qiskit-ibm-runtime/fake-provider}{\emph{fake backend} IBM},
+cio\`e profili salvati che descrivono le porte, i collegamenti tra qubit
+e alcuni parametri di errore dei dispositivi. Con
+\texttt{AerSimulator.from\_backend} costruisco un simulatore che utilizza
+questi dati per modellare gli errori delle porte, il rilassamento e
+gli errori di lettura. Le prove avvengono in locale, senza accedere
+all'hardware IBM: il modello \`e un'approssimazione basata sul profilo
+salvato, non una replica esatta delle condizioni attuali del processore.
+
+\paragraph{Impostazione delle prove.}
+Mantengo fisso il problema: 4 qubit di ricerca, una sola soluzione
+$|0001\rangle$ e 4096 shot per circuito. Vario il numero di iterazioni
+da 0 a 6, includendo il massimo ideale a 3 iterazioni e il calo successivo.
+Ripeto l'esperimento con tre profili:
+\begin{itemize}
+    \item \texttt{FakeManilaV2}, dispositivo da 5 qubit;
+    \item \texttt{FakeNairobiV2}, dispositivo da 7 qubit;
+    \item \texttt{FakeMumbaiV2}, dispositivo da 27 qubit.
+\end{itemize}
+Il numero di qubit del profilo non modifica la dimensione del problema,
+che rimane di quattro qubit logici. Per ciascun backend compilo il
+circuito secondo le porte e i collegamenti disponibili, poi eseguo
+lo stesso circuito compilato sia con rumore sia senza. In questo modo
+posso confrontare le frequenze ottenute nelle due condizioni con
+la probabilit\`a teorica di Grover.
+\newpage
+
+
+\paragraph{Lettura dei risultati.}
+Le tabelle riportano il successo al variare delle iterazioni.
+Per ogni profilo, un grafico confronta teoria, simulazione ideale e
+simulazione rumorosa; un secondo mostra la distribuzione degli esiti
+a 3 iterazioni, evidenziando la soluzione.
+Il confronto permette di osservare se l'aggiunta di iterazioni
+continua a migliorare il risultato oppure se gli errori accumulati
+riducono il beneficio dell'amplificazione, spostando il massimo rispetto
+al caso ideale. Le differenze tra i tre profili dipendono sia dai
+parametri di rumore sia dalla compilazione sulle rispettive topologie:
+non costituiscono una classifica rigorosa delle prestazioni attuali delle QPU.
+
+\begin{figure}[!htbp]
+    \centering
+    \setlength{\abovecaptionskip}{3pt}
+    \includegraphics[width=0.95\textwidth,height=0.19\textheight,keepaspectratio]{ManilaV2.png}
+    \caption{Risultati con \texttt{FakeManilaV2}.}
+    \label{fig:risultati-manila}
+    \par\smallskip
+    \includegraphics[width=0.95\textwidth,height=0.19\textheight,keepaspectratio]{NairobiV2.png}
+    \caption{Risultati con \texttt{FakeNairobiV2}.}
+    \label{fig:risultati-nairobi}
+    \par\smallskip
+    \includegraphics[width=0.95\textwidth,height=0.19\textheight,keepaspectratio]{MumbaiV2.png}
+    \caption{Risultati con \texttt{FakeMumbaiV2}.}
+    \label{fig:risultati-mumbai}
+\end{figure}
+
+\paragraph{Resoconto dei risultati.}
+\begin{itemize}
+    \item \textbf{Picco anticipato.} Nei tre profili il massimo misurato
+    si trova a 2 iterazioni, mentre quello ideale \`e a 3. L'aggiunta
+    della terza iterazione riduce quindi il successo: nel modello
+    rumoroso gli errori accumulati prevalgono sul beneficio atteso
+    dall'ulteriore amplificazione.
+    \item \textbf{Manila.} La frequenza massima \`e circa il $22{,}46\%$,
+    contro il $14{,}48\%$ a 3 iterazioni. Il massimo a 2 iterazioni
+    \`e comunque molto vicino al $22{,}05\%$ ottenuto con una sola:
+    questa piccola differenza va letta tenendo conto delle fluttuazioni
+    statistiche.
+    \item \textbf{Mumbai e Nairobi.} Raggiungono rispettivamente
+    il $40{,}82\%$ e il $40{,}38\%$, quasi il doppio di Manila.
+    La differenza riflette l'effetto complessivo dei profili di rumore
+    e dei circuiti compilati.
+\end{itemize}
+
 \end{document}
