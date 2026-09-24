@@ -8,16 +8,13 @@
 \graphicspath{{immagini/}}
 \usepackage[colorlinks=true,urlcolor=blue,linkcolor=black,citecolor=black]{hyperref}
 
-\newcommand{\nome}{Pierluigi Boscaglia}
-\newcommand{\matricola}{983553}
-
 \begin{document}
 \begin{center}
     {\Large\textbf{LABORATORIO AA. 2025/2026}}\\[0.2cm]
     {\large\textit{Computazione Quantistica} INF0427}\\[0.8cm]
     {\Large Studio sperimentale dell'algoritmo di Grover}\\[0.6cm]
-    {\large\nome}\\[0.15cm]
-    Matricola: \matricola
+    {\large Pierluigi Boscaglia}\\[0.15cm]
+    Matricola: 983553
 \end{center}
 \vspace{0.5cm}
 
@@ -29,15 +26,17 @@ ampiezze. L'obiettivo degli esperimenti è capire come cambia la probabilità
 di successo al variare del numero di iterazioni e quanto il comportamento
 ideale si discosta da quello osservato in presenza di rumore.
 
-Il percorso parte dalla costruzione visuale dei circuiti con
+La relazione inizia con la costruzione visuale dei circuiti tramite
 \href{https://quantum-circuit.com/}{Quantum Programming Studio} e
 \href{https://quantum.cloud.ibm.com/docs/en/guides/composer}{IBM Quantum Composer}.
-Prosegue con piccoli esercizi in Python usando
+Prosegue con alcuni esercizi in Python con
 \href{https://quantumai.google/cirq}{Cirq di Google Quantum AI}, per seguire
 passo dopo passo l'evoluzione delle ampiezze e confrontare le probabilità
 ideali con le frequenze ottenute dalle misure simulate.
-Infine utilizzo \href{https://qiskit.org/}{Qiskit} per approfondire le
-simulazioni ideali e con rumore e svolgere prove su hardware reale tramite
+La parte principale è dedicata allo studio sperimentale con
+\href{https://qiskit.org/}{Qiskit}, riguardanti il confronto tra
+simulazioni ideali,
+simulazioni con rumore ed esecuzioni su hardware reale tramite
 \href{https://quantum.ibm.com/}{IBM Quantum Platform}.
 
 
@@ -150,7 +149,7 @@ l'ancilla in $|-\rangle$ applicando prima $X$ e poi $H$.
 Quando i due controlli valgono uno, la Toffoli applica una $X$ all'ancilla:
 poiché $X|-\rangle=-|-\rangle$, cambia il segno dell'ampiezza
 corrispondente nel registro di ricerca. Le porte $H$ e $X$ sui qubit di ricerca
-rimangono necessarie per completare il diffusore. I due modi di costruirlo producono le stesse probabilità di misura
+rimangono necessarie per completare il diffusore. I due modi di costruirlo producono le stesse probabilità di misura.
 }}
 \end{center}
 
@@ -203,6 +202,8 @@ soluzione da trovare: $|101\rangle$, nell'ordine $|q_2q_1q_0\rangle$.
 \paragraph{Costruzione del circuito.}
 Ho mantenuto la costruzione con ancilla usata in Composer: il circuito
 contiene quindi quattro qubit totali, ma solo tre codificano la soluzione.
+Preparo l'ancilla in $|-\rangle$ e uso una $X$ con i tre qubit di ricerca
+come controlli e l'ancilla come target.
 Per selezionare $|101\rangle$, invece di $|111\rangle$, inserisco una $X$
 sul qubit centrale $q_1$ prima e dopo questa porta.
 Il phase kickback cambia così il segno della sola ampiezza cercata.
@@ -291,13 +292,13 @@ con una frequenza di circa $94{,}14\%$.
 \begin{figure}[!htbp]
     \centering
     \includegraphics[width=0.9\textwidth]{GraficoCirqFinale.png}
-    \caption{Confronto grafico tra le probabilità.}
+    \caption{Confronto tra probabilità ideali e frequenze misurate.}
     \label{fig:cirq-grafico-finale}
 \end{figure}
 
 \newpage
 
-\section{Studio Sperimentale con Qiskit di IBM Quantum e hardware reale}
+\section{Studio sperimentale con Qiskit di IBM Quantum e hardware reale}
 
 Dopo i primi esercizi, ho approfondito lo studio di Grover nel notebook
 \texttt{Grover.ipynb}, utilizzando Qiskit. L'obiettivo è verificare
@@ -316,7 +317,7 @@ Nella simulazione ideale confronto le probabilità ricavate dal vettore
 di stato con le frequenze osservate nelle misure, per mettere in evidenza
 le fluttuazioni dovute al numero finito di ripetizioni. Studio inoltre
 il caso in cui il numero di soluzioni non sia noto, scegliendo casualmente
-quante iterazioni eseguire e verifico se il risultato è una soluzione valida.
+quante iterazioni eseguire e verificando se il risultato è una soluzione valida.
 Passo poi alle simulazioni con rumore e alle prove su hardware reale,
 per osservare come gli errori delle porte e della lettura modifichino
 la probabilità di successo rispetto al caso ideale.
@@ -449,13 +450,14 @@ e ai parametri utilizzati negli esperimenti del notebook:
     l'ordine dei qubit e usa la stessa porta \texttt{MCMTGate} con
     \texttt{ZGate}.
     \item \textbf{Diffusore:}
-    la \href{https://quantum.cloud.ibm.com/docs/en/api/qiskit/qiskit.circuit.library.grover_operator}{documentazione Qiskit di \texttt{grover\_operator}}
-    viene utilizzata direttamente nella funzione \texttt{build\_diffuser}.
+    uso direttamente \texttt{grover\_operator} nella funzione
+    \texttt{build\_diffuser}, seguendo la
+    \href{https://quantum.cloud.ibm.com/docs/en/api/qiskit/qiskit.circuit.library.grover_operator}{documentazione Qiskit}.
     Poiché \texttt{grover\_operator} costruisce il prodotto $DO$,
     passo come oracolo un circuito vuoto, che realizza l'identità:
     ottengo così soltanto $D$.
 \end{itemize}
-Il codice utilizza quindi esempi e strumenti forniti da IBM, evitando cosi costruzioni sviluppate da zero.
+Il codice adatta quindi esempi e strumenti forniti da IBM agli esperimenti del notebook.
 
 \begin{figure}[!htbp]
     \centering
@@ -494,7 +496,7 @@ stati e $M$ soluzioni, calcolo prima $\theta=\arcsin\sqrt{M/N}$ e poi
 \[
     k_* = \frac{\pi}{4\theta}-\frac{1}{2}.
 \]
-Il valore $k_*$ è continuo: il codice confronta la probabilità
+Il valore $k_*$ non è necessariamente intero: il codice confronta la probabilità
 $P(k)=\sin^2((2k+1)\theta)$ nei due interi non negativi vicini e sceglie
 quello con probabilità maggiore, preferendo il minore in caso di parità.
 Per poche soluzioni rispetto a $N$, uso l'approssimazione
@@ -524,7 +526,7 @@ Con una sola soluzione e 2, 3 e 4 qubit ottengo rispettivamente
 \subsection{Verifiche ideali}
 Nel capitolo 9 confronto teoria e simulazione senza rumore.
 Con \texttt{Statevector} verifico le probabilità per 2, 3 e 4 qubit
- e da 0 a 8 iterazioni, con tolleranza assoluta $10^{-12}$.
+e da 0 a 8 iterazioni, con tolleranza assoluta $10^{-12}$.
 Osservo amplificazione e overshooting.
 
 \begin{figure}[!htbp]
@@ -574,8 +576,8 @@ e numero di porte a due qubit del circuito compilato nella base
 \texttt{u}, \texttt{cx}.
 Questo confronto distingue il numero di chiamate all'oracolo dal costo
 necessario a realizzarle: aumentando i qubit, anche una singola
-iterazione richiede una costruzione più articolata (questo anticipa già il problema che avremo
-con l'introduzione di rumore).
+iterazione richiede più porte. Questo aspetto diventa importante
+quando introduco il rumore.
 
 \begin{figure}[!htbp]
     \centering
@@ -618,7 +620,7 @@ direttamente il numero ottimale di iterazioni. Ripetere sempre lo stesso
 numero di iterazioni potrebbe far terminare ogni prova in un punto
 con bassa probabilità di successo.
 Il metodo \href{https://arxiv.org/abs/quant-ph/9605034}{BBHT}, proposto da
-Boyer, Brassard, Hoyer e Tapp, affronta questo problema scegliendo
+Boyer, Brassard, Høyer e Tapp, affronta questo problema scegliendo
 casualmente quante iterazioni eseguire. A ogni tentativo preparo
 nuovamente il circuito, misuro un candidato e verifico classicamente
 se è una soluzione; in caso contrario amplio l'intervallo di scelta
@@ -703,7 +705,7 @@ continua a migliorare il risultato oppure se gli errori accumulati
 riducono il beneficio dell'amplificazione, spostando il massimo rispetto
 al caso ideale. Le differenze tra i tre profili dipendono sia dai
 parametri di rumore sia dalla compilazione sulle rispettive topologie:
-non costituiscono una classifica rigorosa delle prestazioni attuali delle QPU.
+non permettono di stabilire quale QPU sia oggi la migliore.
 
 \begin{figure}[!htbp]
     \centering
@@ -753,7 +755,7 @@ rispettivamente 1, 2, 3 e 4.
 
 \paragraph{Accesso e preparazione.}
 Ho utilizzato un account IBM Quantum Platform con un'istanza Open Plan
-(ottenuta tramite IBM Cloude, come indicato nel corso),
+(ottenuta tramite IBM Cloud, come indicato nel corso),
 configurando localmente le credenziali tramite \texttt{QiskitRuntimeService}
 con il nome \texttt{grover-open}. La chiave API permette l'autenticazione,
 mentre il CRN identifica l'istanza del servizio.
@@ -789,9 +791,9 @@ con 4 e soprattutto 5 qubit il successo diminuisce nettamente,
 nonostante la probabilità ideale rimanga elevata.
 Parallelamente crescono profondità e numero di porte a due qubit:
 il circuito richiede più operazioni ed è maggiormente esposto agli errori.
-Il numero di iterazioni ideale non è quindi necessariamente il migliore
-su hardware rumoroso; questa prova, questa prova è in linea con i risultati ottenuti
-in precedenza con i fake backends.
+Questo calo è coerente con quanto osservato nelle simulazioni con i fake backend.
+Il numero di iterazioni ideale può non essere il migliore su hardware rumoroso;
+per verificarlo sul dispositivo servirebbero prove con diversi numeri di iterazioni.
 
 
 \begin{figure}[!htbp]
