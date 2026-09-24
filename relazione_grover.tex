@@ -1,4 +1,4 @@
-\documentclass[a4paper,12pt]{article}
+﻿\documentclass[a4paper,12pt]{article}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage[italian]{babel}
@@ -552,11 +552,76 @@ rispetto alla stessa probabilit\`a teorica.
 
 \begin{figure}[!htbp]
     \centering
-    \includegraphics[width=0.7\textwidth]{9.3-4Qbit3Iterazioni.png}
+    \includegraphics[width=0.5\textwidth]{9.3-4Qbit3Iterazioni.png}
     \caption{Quattro prove con 4 qubit, 3 iterazioni e 4096 shot ciascuna:
     confronto delle frequenze di successo con la probabilit\`a teorica.}
     \label{fig:quattro-prove-ideali}
 \end{figure}
+
+\subsection{Dimensione del problema e costo del circuito}
+Nei capitoli 10 e 11 del notebook studio come cambiano le risorse
+necessarie al variare del numero di qubit e delle soluzioni.
+Le prove sono ancora ideali, con 4096 shot per circuito.
+
+\paragraph{Aumento del numero di qubit.}
+Nel capitolo 10 passo da 2 a 7 qubit, aumentando lo spazio di ricerca
+da 4 a 128 stati. Mantengo una sola soluzione, $|00\ldots01\rangle$,
+e scelgo per ogni dimensione il numero intero di iterazioni vicino
+al primo massimo teorico.
+La tabella e i grafici confrontano le iterazioni con la stima
+$(\pi/4)\sqrt{N}$ e riportano profondit\`a, numero totale di porte
+e numero di porte a due qubit del circuito compilato nella base
+\texttt{u}, \texttt{cx}.
+Questo confronto distingue il numero di chiamate all'oracolo dal costo
+necessario a realizzarle: aumentando i qubit, anche una singola
+iterazione richiede una costruzione pi\`u articolata (questo anticipa già il problema che avremo
+con l'introduzione di rumore).
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[width=0.7\textwidth]{10.CostoCircuito.png}
+    \caption{Scaling ideale: risorse del circuito al crescere del numero
+    di qubit, dopo la compilazione nella base di porte \texttt{u} e \texttt{cx}.}
+    \label{fig:costo-circuito}
+\end{figure}
+
+\paragraph{Variazione del numero di soluzioni.}
+Nel capitolo 11 fisso 5 qubit, quindi $N=32$, e considero
+$M=1,2,4,8$ soluzioni, provando da 0 a 8 iterazioni.
+Il successo corrisponde alla misura di una qualsiasi delle stringhe
+marcate: sommo quindi i relativi conteggi prima di dividere per gli shot.
+Confronto le frequenze con $P(k)=\sin^2((2k+1)\theta)$,
+dove $\theta=\arcsin\sqrt{M/N}$.
+Aumentando le soluzioni, il primo massimo viene raggiunto con meno
+iterazioni.
+Questo non implica per\`o che il circuito richieda sempre meno porte:
+nel mio oracolo ogni soluzione viene marcata separatamente, quindi
+il costo di una chiamata cresce con il numero di stati da riconoscere.
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[width=0.9\textwidth]{Multi1.png}
+    \caption{Risultati per $N=32$ e diversi numeri di soluzioni:
+    iterazioni scelte, probabilit\`a teoriche e frequenze misurate.}
+    \label{fig:multi-tabella}
+    \par\medskip
+    \includegraphics[width=\textwidth]{Multi2.png}
+    \caption{Iterazioni ottimali e probabilit\`a di successo al variare
+    del numero di soluzioni, con 4096 shot per circuito.}
+    \label{fig:multi-grafici}
+\end{figure}
+
+
+\paragraph{Numero di soluzioni ignoto.}
+Completo il capitolo 11 con una ricerca randomizzata: scelgo le iterazioni
+in un intervallo che cresce dopo i tentativi falliti, misuro un candidato
+e verifico classicamente se \`e valido. Ripeto la ricerca 100 volte
+per ciascun valore di $M$, confrontando successi e chiamate all'oracolo.
+Il programma di ricerca non usa $M$ per scegliere le iterazioni;
+le soluzioni sono note al protocollo sperimentale per costruire
+l'oracolo e il controllo dei candidati. Il limite di 40 tentativi
+evita esecuzioni indefinite, ma un insuccesso entro questo limite
+non dimostra l'assenza di soluzioni.
 
 \subsection{Simulazione con un fake backend IBM}
 Nel capitolo 12 del notebook introduco del rumore attraverso i \href{https://quantum.cloud.ibm.com/docs/en/api/qiskit-ibm-runtime/fake-provider}{\emph{fake backend} IBM},
@@ -634,3 +699,4 @@ non costituiscono una classifica rigorosa delle prestazioni attuali delle QPU.
 \end{itemize}
 
 \end{document}
+
